@@ -1,0 +1,19 @@
+package docs
+
+// init test variable
+// rename this file to var_init_test.go and set the defalut value below.
+
+func init() {
+	testAPPID = ""
+	testAPPSecret = ""
+
+	testAPPID2 = ""
+	testAPPSecret2 = ""
+
+	testSpreadSheetToken = ""
+	testDocToken = ""
+	testFolderToken = ""
+
+	testBigFile = ""
+    testUserEmail = ""
+}
