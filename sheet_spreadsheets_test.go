@@ -13,9 +13,14 @@ func TestSpreadSheets_ChangeOwner(t *testing.T) {
 	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
 	assert.NoError(t, ss.Err)
 	t.Log(baseDomain + "/sheets/" + ss.token)
-	sheet := ss.SheetIndex(0).WriteRows([]string{"name", "age"}, [][]interface{}{
-		{"Ace", 1}, {"Bob", 2},
-	})
+	sheet := ss.SheetIndex(0).WriteRows(
+		[]string{"name", "age"},
+		[][]interface{}{
+			{"Ace", 1},
+			{"Bob", 2},
+			{"", ""},
+		},
+	)
 	assert.NoError(t, sheet.Err)
 }
 

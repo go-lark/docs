@@ -52,7 +52,7 @@ func (p *permission) TransferOwner(fileToken string, fileType FileType, newOwner
 		Token:          fileToken,
 		Owner:          *newOwner,
 		RemoveOldOwner: removeOldOwner,
-		CancelNotify:   notify,
+		CancelNotify:   !notify,
 	}
 	switch newOwner.MemberType {
 	case memberTypeEmail, memberTypeOpenID, memberTypeUserID:
