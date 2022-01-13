@@ -208,10 +208,12 @@ func (s *Sheet) Protect(info string, userIDs []string) *Sheet {
 	return s.updateBase(m)
 }
 
+// MoveRows start with 1
 func (s *Sheet) MoveRows(start, end, target int) *Sheet {
 	return s.moveRowsOrCols(start, end, target, true)
 }
 
+// MoveColumns start with 1
 func (s *Sheet) MoveColumns(start, end, target int) *Sheet {
 	return s.moveRowsOrCols(start, end, target, false)
 }

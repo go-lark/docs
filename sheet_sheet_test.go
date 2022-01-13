@@ -6,8 +6,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	sheet *Sheet
+)
+
+func TestSheet_moveRowOrColumn(t *testing.T) {
+	getSheet()
+	sheet.WriteRows([]string{"a", "b", "c"}, [][]interface{}{
+		{"d", "e", "f"},
+		{"g", "h", "k"},
+	})
+	assert.NoError(t, sheet.Err)
+	sheet.MoveRows(1, 1, 3)
+	assert.NoError(t, sheet.Err)
+	sheet.MoveColumns(1, 1, 5)
+	assert.NoError(t, sheet.Err)
+}
+
 func TestSheet_update(t *testing.T) {
-	sheet := getSheetClient().AddSheet("test update", 0)
+	getSheet()
 	assert.NoError(t, sheet.Err)
 	meta, err := sheet.getMeta()
 	assert.NoError(t, err)
@@ -38,4 +55,11 @@ func TestSheet_update(t *testing.T) {
 		sheet.Protect("locked", nil)
 		assert.NoError(t, sheet.Err)
 	})
+}
+
+func getSheet() *Sheet {
+	if sheet == nil {
+		sheet = getSheetClient().AddSheet("test update", 0)
+	}
+	return sheet
 }
