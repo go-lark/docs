@@ -225,14 +225,6 @@ func (ss *SpreadSheets) CopySheet(sourceSheetID string, title string) (sheet *Sh
 	return newSheet(id, ss)
 }
 
-// SpreadsheetMeta sheet 的 meta 信息
-type SpreadSheetMeta = MetaInfoResp
-type MetaInfoResp struct {
-	Properties       metaProp    `json:"properties"`
-	Sheets           []sheetMeta `json:"sheets"`
-	SpreadsheetToken string      `json:"spreadsheetToken"`
-}
-
 type SheetContent struct {
 	ValueRange struct {
 		Values [][]interface{} `json:"values"`
@@ -273,20 +265,59 @@ type (
 	}
 )
 
-type metaProp struct {
-	Title      string `json:"title"`
-	OwnerUser  int64  `json:"ownerUser"`
-	SheetCount int    `json:"sheetCount"`
-	Revision   int    `json:"revision"`
-}
+type (
+	// SpreadsheetMeta sheet 的 meta 信息
+	SpreadSheetMeta = MetaInfoResp
+	MetaInfoResp    struct {
+		Properties       metaProp    `json:"properties"`
+		Sheets           []sheetMeta `json:"sheets"`
+		SpreadsheetToken string      `json:"spreadsheetToken"`
+	}
+	metaProp struct {
+		Title       string `json:"title"`
+		OwnerUser   int64  `json:"ownerUser"`
+		OwnerUserID string `json:"ownerUserID"`
+		SheetCount  int    `json:"sheetCount"`
+		Revision    int    `json:"revision"`
+	}
+	sheetMeta struct {
+		SheetID        string              `json:"sheetId"`
+		Title          string              `json:"title"`
+		Index          int                 `json:"index"`
+		RowCount       int                 `json:"rowCount"`
+		ColumnCount    int                 `json:"columnCount"`
+		FrozenRowCount int                 `json:"frozenRowCount,omitempty"`
+		FrozenColCount int                 `json:"frozenColCount,omitempty"`
+		Merges         []*sheetMetaMerge   `json:"merges,omitempty"`
+		Protect        []*sheetMetaProtect `json:"protectedRange"`
+		BlockInfo      *sheetMetaBlock     `json:"blockInfo"`
+	}
 
-type sheetMeta struct {
-	SheetID     string `json:"sheetId"`
-	Title       string `json:"title"`
-	Index       int    `json:"index"`
-	RowCount    int    `json:"rowCount"`
-	ColumnCount int    `json:"columnCount"`
-}
+	sheetMetaMerge struct {
+		ColumnCount      int `json:"columnCount"`
+		RowCount         int `json:"rowCount"`
+		StartColumnIndex int `json:"startColumnIndex"`
+		StartRowIndex    int `json:"startRowIndex"`
+	}
+
+	sheetMetaProtect struct {
+		Dimension sheetMetaProtectDimension `json:"dimension"`
+		ProtectID string                    `json:"protectId"`
+		SheetID   string                    `json:"sheetId"`
+		LockInfo  string                    `json:"lockInfo"`
+	}
+
+	sheetMetaProtectDimension struct {
+		EndIndex       int    `json:"endIndex"`
+		MajorDimension string `json:"majorDimension"`
+		SheetID        string `json:"sheetId"`
+		StartIndex     int    `json:"startIndex"`
+	}
+	sheetMetaBlock struct {
+		BlockToken string `json:"blockToken"`
+		BlockType  string `json:"blockType"`
+	}
+)
 
 type respBody struct {
 	Code int             `json:"code"`
