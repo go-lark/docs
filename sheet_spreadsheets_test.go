@@ -9,6 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestColCul(t *testing.T) {
+	data := map[string]int{
+		"A":  1,
+		"Z":  26,
+		"AA": 27,
+	}
+	for k, v := range data {
+		r := colName2Num(k)
+		assert.Equal(t, v, r, k)
+	}
+}
+
 func TestSpreadSheets_ChangeOwner(t *testing.T) {
 	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
 	assert.NoError(t, ss.Err)
@@ -36,6 +48,7 @@ func TestSpreadSheets_Meta(t *testing.T) {
 	meta, err := sheet.GetMeta()
 	assert.NoError(t, err)
 	assert.NotZero(t, len(meta.Sheets))
+	t.Log(meta.Sheets[0].Merges[0])
 }
 
 func TestSpreadSheets_Content(t *testing.T) {
@@ -55,10 +68,15 @@ func TestSpreadSheets_V2(t *testing.T) {
 
 func TestSpreadSheets_GetContent(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")
-	rows, err := c.GetRows(false)
+	rows, err := c.GetRows(true)
 	assert.NoError(t, err)
 	assert.NotZero(t, len(rows))
 	t.Log("count: ", len(rows))
+	for i, v := range rows {
+		for j, vv := range v {
+			t.Logf("%d, %d, %v", i, j, vv.ToString())
+		}
+	}
 }
 
 func TestSpreadSheets_WriteRows(t *testing.T) {

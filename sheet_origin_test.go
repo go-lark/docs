@@ -42,6 +42,7 @@ func TestSpreadSheetOrigin_SheetBatchUpdate(t *testing.T) {
 	t.Log(res)
 }
 
+/*
 func TestSpreadSheetOrigin_ValuesPrepend(t *testing.T) {
 	id, err := getSheetID()
 	assert.NoError(t, err)
@@ -57,6 +58,7 @@ func TestSpreadSheetOrigin_ValuesPrepend(t *testing.T) {
 	assert.NotZero(t, len(b))
 	t.Log(res2)
 }
+*/
 
 func TestSpreadSheetOrigin_InsertiDimensionRange(t *testing.T) {
 	id, err := getSheetID()
@@ -86,6 +88,7 @@ func TestSpreadSheetOrigin_DimensionRangeDelete(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+/*
 func TestSpreadSheetOrigin_WriteValuesByRange(t *testing.T) {
 	id, err := getSheetID()
 	assert.NoError(t, err)
@@ -131,6 +134,7 @@ func TestSpreadSheetOrigin_ReadValuesByRangeMulti(t *testing.T) {
 	assert.NotZero(t, len(res.ValueRanges))
 	t.Log(res.ValueRanges)
 }
+*/
 
 func getOrigin() *SpreadSheetOrigin {
 	return &SpreadSheetOrigin{

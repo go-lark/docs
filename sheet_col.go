@@ -1,5 +1,7 @@
 package docs
 
+import "strings"
+
 /*
 	Method of sheet column.
 */
@@ -39,7 +41,9 @@ func num2ColName(num int) string {
 	return col
 }
 
+// A represent 1
 func colName2Num(name string) int {
+	name = strings.ToUpper(name)
 	col := 0
 	base := 1
 	for i := len(name) - 1; i >= 0; i-- {

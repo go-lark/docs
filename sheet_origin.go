@@ -107,7 +107,7 @@ func (so *SpreadSheetOrigin) Import(filepath string, filename string, folderToke
 
 // ValuesPrepend
 // reference https://open.feishu.cn/document/ukTMukTMukTM/uIjMzUjLyIzM14iMyMTN
-func (so *SpreadSheetOrigin) ValuesPrepend(_range Range, data [][]interface{}) ([]byte, *ValuesPrependResp, error) {
+func (so *SpreadSheetOrigin) ValuesPrepend(_range SheetRange, data [][]interface{}) ([]byte, *ValuesPrependResp, error) {
 	en, _ := json.Marshal(map[string]interface{}{
 		"valueRange": map[string]interface{}{
 			"range":  _range,

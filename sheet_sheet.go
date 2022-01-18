@@ -16,10 +16,12 @@ const (
 )
 
 func newSheet(id string, client *SpreadSheets) *Sheet {
-	return &Sheet{
+	s := &Sheet{
 		ssClient: client,
 		id:       id,
 	}
+	s.SheetRange = &SheetRange{sheet: s, rangeVal: id}
+	return s
 }
 
 // Sheet represent a sheet tab in spread sheets(SpreadSheets)
@@ -27,6 +29,7 @@ type Sheet struct {
 	Err      error
 	ssClient *SpreadSheets
 	id       string // sheet id
+	*SheetRange
 }
 
 func (s *Sheet) GetID() string {
@@ -35,11 +38,52 @@ func (s *Sheet) GetID() string {
 
 func (s *Sheet) GetContentByRange(startCellname, endCellname string) (*SheetContent, error) {
 	r := s.genRange(startCellname, endCellname)
+	return s.getContentByRange(r)
+}
+
+func (s *Sheet) getContentByRange(r string) (*SheetContent, error) {
 	url := fmt.Sprintf("%s/open-apis/sheet/v2/spreadsheets/%s/values/%s?valueRenderOption=ToString", s.ssClient.baseClient.domain, s.ssClient.token, r)
 	_req, _ := http.NewRequest(http.MethodGet, url, nil)
 	var content *SheetContent
 	_, err := s.ssClient.baseClient.CommonReq(_req, &content)
 	return content, err
+}
+
+// !A1:D5
+func (s *Sheet) NewRangeFull(sheetID, startCellName, endCellName string) *SheetRange {
+	r := &SheetRange{}
+	if s.Err != nil {
+		r.Err = s.Err
+		return r
+	}
+	val := sheetID + "!" + startCellName + ":" + endCellName
+	r.rangeVal = val
+	r.sheet = s
+	return r
+}
+
+// !A1:D
+func (s *Sheet) NewRangeHalf(sheetID, startCellName, endCol string) *SheetRange {
+	r := &SheetRange{}
+	if s.Err != nil {
+		r.Err = s.Err
+		return r
+	}
+	r.rangeVal = sheetID + "!" + startCellName + ":" + endCol
+	r.sheet = s
+	return r
+}
+
+// !A:D
+func (s *Sheet) NewRangeCol(sheetID, startCol, endCol string) *SheetRange {
+	r := &SheetRange{}
+	if s.Err != nil {
+		r.Err = s.Err
+		return r
+	}
+	r.rangeVal = sheetID + "!" + startCol + ":" + endCol
+	r.sheet = s
+	return r
 }
 
 // GetContentByRangeV2
@@ -270,3 +314,10 @@ func (s *Sheet) getMeta() (*sheetMeta, error) {
 
 // SheetRow represent for a group of sheet cell
 type SheetRow = []*SheetCell
+
+type mergeInfo struct {
+	startCol int
+	endCol   int
+	startRow int
+	endRow   int
+}
