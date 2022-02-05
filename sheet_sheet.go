@@ -20,7 +20,7 @@ func newSheet(id string, client *SpreadSheets) *Sheet {
 		ssClient: client,
 		id:       id,
 	}
-	s.SheetRange = &SheetRange{sheet: s, rangeVal: id}
+	//s.SheetRange = &SheetRange{sheet: s, rangeVal: id}
 	return s
 }
 
@@ -29,7 +29,8 @@ type Sheet struct {
 	Err      error
 	ssClient *SpreadSheets
 	id       string // sheet id
-	*SheetRange
+
+	//	*SheetRange
 }
 
 func (s *Sheet) GetID() string {
@@ -50,41 +51,56 @@ func (s *Sheet) getContentByRange(r string) (*SheetContent, error) {
 }
 
 // !A1:D5
-func (s *Sheet) NewRangeFull(sheetID, startCellName, endCellName string) *SheetRange {
+func (s *Sheet) NewRangeFull(startCellName, endCellName string) *SheetRange {
 	r := &SheetRange{}
 	if s.Err != nil {
 		r.Err = s.Err
 		return r
 	}
-	val := sheetID + "!" + startCellName + ":" + endCellName
-	r.rangeVal = val
+	r.leftTop = NewCellName(startCellName)
+	r.rightBottom = NewCellName(endCellName)
 	r.sheet = s
 	return r
 }
 
+/*
 // !A1:D
-func (s *Sheet) NewRangeHalf(sheetID, startCellName, endCol string) *SheetRange {
+func (s *Sheet) NewRangeHalf(startCellName, endCol string) *SheetRange {
 	r := &SheetRange{}
 	if s.Err != nil {
 		r.Err = s.Err
 		return r
 	}
-	r.rangeVal = sheetID + "!" + startCellName + ":" + endCol
+	r.rangeVal = s.id + "!" + startCellName + ":" + endCol
 	r.sheet = s
 	return r
 }
 
 // !A:D
-func (s *Sheet) NewRangeCol(sheetID, startCol, endCol string) *SheetRange {
+func (s *Sheet) NewRangeCol(startCol, endCol string) *SheetRange {
 	r := &SheetRange{}
 	if s.Err != nil {
 		r.Err = s.Err
 		return r
 	}
-	r.rangeVal = sheetID + "!" + startCol + ":" + endCol
+	r.rangeVal = s.id + "!" + startCol + ":" + endCol
 	r.sheet = s
 	return r
 }
+
+func (s *Sheet) NewRangeRow(startRow, endRow string) *SheetRange {
+	r := &SheetRange{}
+	if s.Err != nil {
+		r.Err = s.Err
+		return r
+	}
+	meta, err := s.getMeta()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+}
+*/
 
 // GetContentByRangeV2
 // Reference https://open.feishu.cn/document/ukTMukTMukTM/ugTMzUjL4EzM14COxMTN
@@ -311,6 +327,21 @@ func (s *Sheet) getMeta() (*sheetMeta, error) {
 	}
 	return nil, fmt.Errorf("get sheet meta, sheetID: %s, can not find this sheet", s.id)
 }
+
+/*
+func (s *Sheet) getRange() *SheetRange {
+	r := &SheetRange{}
+	if s.Err != nil {
+		r.Err = s.Err
+		return r
+	}
+	meta, err := s.getMeta()
+	if err != nil {
+		r.Err = s.Err
+		return r
+	}
+}
+*/
 
 // SheetRow represent for a group of sheet cell
 type SheetRow = []*SheetCell

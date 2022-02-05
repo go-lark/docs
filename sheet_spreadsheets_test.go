@@ -9,6 +9,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSpreadSheetsBind(t *testing.T) {
+	c := getSheetClient().SheetID("2BGf04")
+	rows, err := c.GetRows(true)
+	assert.NoError(t, err)
+	assert.NotZero(t, len(rows))
+	t.Log("count: ", len(rows))
+	for i, v := range rows {
+		for j, vv := range v {
+			t.Logf("%d, %d, %v", i, j, vv.ToString())
+		}
+	}
+}
+
 func TestColCul(t *testing.T) {
 	data := map[string]int{
 		"A":  1,

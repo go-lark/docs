@@ -8,9 +8,10 @@ import (
 
 // Range reference https://open.feishu.cn/document/ukTMukTMukTM/uczNzUjL3czM14yN3MTN#bae19f77
 type SheetRange struct {
-	Err      error
-	rangeVal string
-	sheet    *Sheet
+	Err         error
+	leftTop     *cellName
+	rightBottom *cellName
+	sheet       *Sheet
 }
 
 /*
@@ -74,7 +75,7 @@ func (s *SheetRange) Rows() ([]SheetRow, error) {
 	if s.Err != nil {
 		return nil, s.Err
 	}
-	content, err := s.sheet.getContentByRange(s.rangeVal)
+	content, err := s.sheet.getContentByRange(s.genRangeStr())
 	if err != nil {
 		return nil, err
 	}
@@ -121,29 +122,32 @@ func (s *SheetRange) Scan(ptr interface{}) error {
 }
 
 func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
-	t := reflect.TypeOf(ptr)
-	if t.Kind() != reflect.Ptr {
+	// check it args is a pointer
+	rv := reflect.ValueOf(ptr)
+	if rv.Kind() != reflect.Ptr {
 		return fmt.Errorf("ptr is must a slice pointer")
 	}
-	// avoid a pointer of a pointer
-	for t.Kind() == reflect.Ptr {
-		t = t.Elem()
-	}
-	if t.Kind() != reflect.Slice {
-		return fmt.Errorf("ptr is must a slice pointer")
-	}
-	rv := reflect.ValueOf(t)
-	l := rv.Len()
-	if l != 0 {
-		return fmt.Errorf("slice length must be 0")
-	}
-	if rv.CanAddr() {
+	if rv.CanSet() {
 		return fmt.Errorf("can not get slice address")
 	}
-	typ := rv.Type().Elem()
+	// dereference the pointer to get the slice
+	rv = rv.Elem()
+	if rv.Kind() != reflect.Slice {
+		return fmt.Errorf("ptr element is must a slice")
+	}
+	// slice element
+	elemt := rv.Type().Elem()
+	if elemt.Kind() != reflect.Ptr {
+		return fmt.Errorf("slice element must be a struct pointer, it is not pointer")
+	}
+	elemt = elemt.Elem()
+	if elemt.Kind() != reflect.Struct {
+		return fmt.Errorf("slice element must be a struct pointer, it it not struct")
+	}
+
 	fieldPosition := map[int]int{}
-	for i := 0; i < typ.NumField(); i++ {
-		str := typ.Field(i).Tag.Get("d")
+	for i := 0; i < elemt.NumField(); i++ {
+		str := elemt.Field(i).Tag.Get("docs")
 		if str != "" {
 			v, err := strconv.ParseInt(str, 10, 64)
 			if err != nil {
@@ -155,18 +159,25 @@ func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
 		}
 	}
 	for _, row := range cells {
-		val := reflect.New(typ)
+		// new a slice element
+		valP := reflect.New(elemt)
+		// dereference pointer
+		val := valP.Elem()
 		for j := 0; j < val.NumField(); j++ {
+			name := elemt.Field(j).Name
 			position := fieldPosition[j]
 			f := val.Field(j)
+			if !f.CanAddr() {
+				fmt.Printf(": can not set, %s\n", name)
+			}
 			switch f.Kind() {
-			case reflect.Int64:
+			case reflect.Int64, reflect.Int:
 				to, err := row[position].ToInt64()
 				if err != nil {
 					return fmt.Errorf("scan faild, index: %d, %w", j, err)
 				}
 				f.SetInt(to)
-			case reflect.Float64:
+			case reflect.Float64, reflect.Float32:
 				to, err := row[position].ToFloat()
 				if err != nil {
 					return fmt.Errorf("scan faild, index: %d, %w", j, err)
@@ -177,7 +188,11 @@ func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
 			}
 
 		}
-		rv.Set(reflect.Append(rv, val))
+		rv.Set(reflect.Append(rv, valP))
 	}
 	return nil
+}
+
+func (s *SheetRange) genRangeStr() string {
+	return s.sheet.id + "!" + s.leftTop.String() + ":" + s.rightBottom.String()
 }
