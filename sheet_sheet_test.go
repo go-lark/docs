@@ -59,7 +59,7 @@ func TestSheet_update(t *testing.T) {
 
 func getSheet() *Sheet {
 	if sheet == nil {
-		sheet = getSheetClient().AddSheet("test update", 0)
+		sheet = getSheetClient().CreateSheet("test update", 0)
 	}
 	return sheet
 }

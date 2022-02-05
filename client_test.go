@@ -14,7 +14,7 @@ func init() {
 //}
 
 func getClientNew() *Client {
-	return NewClient(testAPPID2, testAPPSecret2)
+	return NewClient(testAPPID, testAPPSecret)
 }
 
 //func TestRefreshToken(t *testing.T) {

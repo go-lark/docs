@@ -129,7 +129,7 @@ func (ss *SpreadSheets) setPublic(args *PublicSet) *SpreadSheets {
 // AddSheet
 // Parameter
 //  index: first position is 0
-func (ss *SpreadSheets) AddSheet(title string, index int) *Sheet {
+func (ss *SpreadSheets) CreateSheet(title string, index int) *Sheet {
 	sheet := &Sheet{}
 	if ss.Err != nil {
 		sheet.Err = ss.Err
@@ -158,12 +158,12 @@ func (ss *SpreadSheets) AddSheet(title string, index int) *Sheet {
 
 // SheetID get sheet by sheet id
 // 根据 sheet id 获取 sheet 实例。
-func (ss *SpreadSheets) SheetID(sheetID string) *Sheet {
+func (ss *SpreadSheets) GetSheetByID(sheetID string) *Sheet {
 	return newSheet(sheetID, ss)
 }
 
 // SheetIndex get a sheet instance by index. Index start from 1
-func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
+func (ss *SpreadSheets) GetSheetByIndex(index int) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
@@ -172,7 +172,7 @@ func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
 	}
 	for _, v := range meta.Sheets {
 		if v.Index == index {
-			return ss.SheetID(v.SheetID)
+			return ss.GetSheetByID(v.SheetID)
 		}
 	}
 	s.Err = newErr("sheet index not exist, index: %d", index)
@@ -180,7 +180,7 @@ func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
 }
 
 // SheetName get sheet by sheet name
-func (ss *SpreadSheets) SheetName(name string) *Sheet {
+func (ss *SpreadSheets) GetSheetByName(name string) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
@@ -189,7 +189,7 @@ func (ss *SpreadSheets) SheetName(name string) *Sheet {
 	}
 	for _, v := range meta.Sheets {
 		if v.Title == name {
-			return ss.SheetID(v.SheetID)
+			return ss.GetSheetByID(v.SheetID)
 		}
 	}
 	s.Err = newErr("sheet name not exist, name: %s", name)

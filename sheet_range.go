@@ -1,7 +1,11 @@
 package docs
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/go-lark/docs/log"
+	"net/http"
 	"reflect"
 	"strconv"
 )
@@ -14,9 +18,24 @@ type SheetRange struct {
 	sheet       *Sheet
 }
 
-/*
 // Prepend insert data before range block.
-func (s *SheetRange) Prepend() {}
+func (s *SheetRange) Prepend(data [][]interface{}) *SheetRange {
+	_url := "/open-apis/sheets/v2/spreadsheets/" + s.sheet.ssClient.token + "/values_prepend"
+	args, _ := json.Marshal(map[string]interface{}{
+		"valueRange": map[string]interface{}{
+			"range":  s.rangeStr(),
+			"values": data,
+		},
+	})
+	req, _ := http.NewRequest(http.MethodPost, s.sheet.ssClient.baseClient.urlJoin(_url), bytes.NewReader(args))
+	b, err := s.sheet.ssClient.baseClient.CommonReq(req, nil)
+	if err != nil {
+		s.Err = err
+		return s
+	}
+	log.Infof("prepend: ", string(b))
+	return s
+}
 
 // Append insert data after range block.
 func (s *SheetRange) Append() {}
@@ -68,14 +87,13 @@ func (s *SheetRange) Find(keyword string, matchCase, matchEntireCell, regex, inc
 }
 
 func (s *SheetRange) Replace() {}
-*/
 
 // Rows ...
 func (s *SheetRange) Rows() ([]SheetRow, error) {
 	if s.Err != nil {
 		return nil, s.Err
 	}
-	content, err := s.sheet.getContentByRange(s.genRangeStr())
+	content, err := s.sheet.getContentByRange(s.rangeStr())
 	if err != nil {
 		return nil, err
 	}
@@ -193,6 +211,6 @@ func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
 	return nil
 }
 
-func (s *SheetRange) genRangeStr() string {
+func (s *SheetRange) rangeStr() string {
 	return s.sheet.id + "!" + s.leftTop.String() + ":" + s.rightBottom.String()
 }

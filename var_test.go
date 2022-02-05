@@ -18,4 +18,5 @@ var (
 
 	testBigFile   = ""
 	testUserEmail = ""
+	testUserID    = ""
 )

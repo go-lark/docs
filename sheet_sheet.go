@@ -51,7 +51,7 @@ func (s *Sheet) getContentByRange(r string) (*SheetContent, error) {
 }
 
 // !A1:D5
-func (s *Sheet) NewRangeFull(startCellName, endCellName string) *SheetRange {
+func (s *Sheet) GetRange(startCellName, endCellName string) *SheetRange {
 	r := &SheetRange{}
 	if s.Err != nil {
 		r.Err = s.Err

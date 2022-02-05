@@ -7,6 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestPrepend(t *testing.T) {
+	c := getSheetClient().GetSheetByIndex(0)
+	r := c.GetRange("A1", "B2").Prepend(
+		[][]interface{}{
+			{"a", "b"},
+			{1, 3},
+		},
+	)
+	assert.NoError(t, r.Err)
+}
+
 func TestScan(t *testing.T) {
 	type A struct {
 		Name string
@@ -23,7 +34,9 @@ func TestScan(t *testing.T) {
 	dev.PJSON(res)
 }
 
+/*
 func TestGetRows(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")
 	c.Scan(nil)
 }
+*/
