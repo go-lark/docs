@@ -91,7 +91,7 @@ func NewMemberWithEmail(email string) *Member {
 
 // NewMemberWithOpenID
 // Parameter
-//  openID: is open user id. you can get it here(https://open.feishu.cn/document/home/user-identity-introduction/how-to-get)
+//  openID: It is open user id. you can get it here(https://open.feishu.cn/document/home/user-identity-introduction/how-to-get)
 func NewMemberWithOpenID(openID string) *Member {
 	return &Member{
 		MemberType: memberTypeOpenID,
@@ -113,7 +113,7 @@ func NewMemberWithUserID(userID string) *Member {
 	}
 }
 
-func Newopendepartmentid(opendepartmentid string) *Member {
+func NewMemberOpenDepartmentid(opendepartmentid string) *Member {
 	return &Member{
 		MemberType: memberTypeOpendepartmentID,
 		MemberID:   opendepartmentid,

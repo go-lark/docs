@@ -126,10 +126,10 @@ func (ss *SpreadSheets) setPublic(args *PublicSet) *SpreadSheets {
 	return ss
 }
 
-// AddSheet
+// CreateSheet
 // Parameter
 //  index: first position is 0
-func (ss *SpreadSheets) AddSheet(title string, index int) *Sheet {
+func (ss *SpreadSheets) CreateSheet(title string, index int) *Sheet {
 	sheet := &Sheet{}
 	if ss.Err != nil {
 		sheet.Err = ss.Err
@@ -153,26 +153,40 @@ func (ss *SpreadSheets) AddSheet(title string, index int) *Sheet {
 		return sheet
 	}
 	id := res.Replies[0].AddSheet.Properties.SheetID
-	return newSheet(id, ss)
+	return ss.GetSheetByID(id)
 }
 
 // SheetID get sheet by sheet id
 // 根据 sheet id 获取 sheet 实例。
-func (ss *SpreadSheets) SheetID(sheetID string) *Sheet {
-	return newSheet(sheetID, ss)
-}
-
-// SheetIndex get a sheet instance by index. Index start from 1
-func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
+func (ss *SpreadSheets) GetSheetByID(sheetID string) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
 		s.Err = newErr(err.Error())
 		return s
 	}
-	for _, v := range meta.Sheets {
+	for _, vv := range meta.Sheets {
+		v := vv
+		if v.SheetID == sheetID {
+			return newSheet(&v, ss)
+		}
+	}
+	s.Err = newErr("sheet id not exist, id: %s", sheetID)
+	return s
+}
+
+// SheetIndex get a sheet instance by index. Index start from 1
+func (ss *SpreadSheets) GetSheetByIndex(index int) *Sheet {
+	meta, err := ss.GetMeta()
+	s := &Sheet{}
+	if err != nil {
+		s.Err = newErr(err.Error())
+		return s
+	}
+	for _, vv := range meta.Sheets {
+		v := vv
 		if v.Index == index {
-			return ss.SheetID(v.SheetID)
+			return newSheet(&v, ss)
 		}
 	}
 	s.Err = newErr("sheet index not exist, index: %d", index)
@@ -180,22 +194,27 @@ func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
 }
 
 // SheetName get sheet by sheet name
-func (ss *SpreadSheets) SheetName(name string) *Sheet {
+func (ss *SpreadSheets) GetSheetByName(name string) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
 		s.Err = newErr(err.Error())
 		return s
 	}
-	for _, v := range meta.Sheets {
+	for _, vv := range meta.Sheets {
+		v := vv
 		if v.Title == name {
-			return ss.SheetID(v.SheetID)
+			return newSheet(&v, ss)
 		}
 	}
 	s.Err = newErr("sheet name not exist, name: %s", name)
 	return s
 }
 
+// CopySheet
+// Pareameter
+//  sourceSheetID: sheet ID of which will be copied.
+//  title: title of new sheet.
 func (ss *SpreadSheets) CopySheet(sourceSheetID string, title string) (sheet *Sheet) {
 	sheet = &Sheet{}
 	if ss.Err != nil {
@@ -222,7 +241,7 @@ func (ss *SpreadSheets) CopySheet(sourceSheetID string, title string) (sheet *Sh
 		return sheet
 	}
 	id := res.Replies[0].CopySheet.Properties.SheetID
-	return newSheet(id, ss)
+	return ss.GetSheetByID(id)
 }
 
 type SheetContent struct {
@@ -351,7 +370,7 @@ type Range = string
 func (s *Sheet) genRange(startCellname, endCellname string) string {
 	// <sheetID>!A1:D5
 	r := bytes.Buffer{}
-	r.WriteString(s.id)
+	r.WriteString(s.GetID())
 	r.WriteByte('!')
 	r.WriteString(startCellname)
 	r.WriteByte(':')

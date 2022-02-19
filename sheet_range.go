@@ -194,5 +194,5 @@ func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
 }
 
 func (s *SheetRange) genRangeStr() string {
-	return s.sheet.id + "!" + s.leftTop.String() + ":" + s.rightBottom.String()
+	return s.sheet.sheetMeta.SheetID + "!" + s.leftTop.String() + ":" + s.rightBottom.String()
 }

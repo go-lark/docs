@@ -1,12 +1,6 @@
 package docs
 
-import (
-	"testing"
-
-	"github.com/hilaily/kit/dev"
-	"github.com/stretchr/testify/assert"
-)
-
+/*
 func TestScan(t *testing.T) {
 	type A struct {
 		Name string
@@ -27,3 +21,4 @@ func TestGetRows(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")
 	c.Scan(nil)
 }
+*/

@@ -15,10 +15,10 @@ const (
 	defautWriteRowCount = 5000
 )
 
-func newSheet(id string, client *SpreadSheets) *Sheet {
+func newSheet(sheetMeta *sheetMeta, client *SpreadSheets) *Sheet {
 	s := &Sheet{
-		ssClient: client,
-		id:       id,
+		ssClient:  client,
+		sheetMeta: sheetMeta,
 	}
 	//s.SheetRange = &SheetRange{sheet: s, rangeVal: id}
 	return s
@@ -26,15 +26,19 @@ func newSheet(id string, client *SpreadSheets) *Sheet {
 
 // Sheet represent a sheet tab in spread sheets(SpreadSheets)
 type Sheet struct {
-	Err      error
-	ssClient *SpreadSheets
-	id       string // sheet id
+	Err       error
+	sheetMeta *sheetMeta
+	ssClient  *SpreadSheets
 
 	//	*SheetRange
 }
 
 func (s *Sheet) GetID() string {
-	return s.id
+	return s.sheetMeta.SheetID
+}
+
+func (s *Sheet) GetName() string {
+	return s.sheetMeta.Title
 }
 
 func (s *Sheet) GetContentByRange(startCellname, endCellname string) (*SheetContent, error) {
@@ -286,7 +290,7 @@ func (s *Sheet) moveRowsOrCols(start, end, target int, row bool) *Sheet {
 	if !row {
 		flag = "COLUMNS"
 	}
-	_url := s.ssClient.baseClient.urlJoin(fmt.Sprintf("/open-apis/sheets/v3/spreadsheets/%s/sheets/%s/move_dimension", s.ssClient.token, s.id))
+	_url := s.ssClient.baseClient.urlJoin(fmt.Sprintf("/open-apis/sheets/v3/spreadsheets/%s/sheets/%s/move_dimension", s.ssClient.token, s.GetID()))
 	en, _ := json.Marshal(map[string]interface{}{
 		"source": map[string]interface{}{
 			"major_dimension": flag,
@@ -305,7 +309,7 @@ func (s *Sheet) updateBase(m map[string]interface{}) *Sheet {
 	if s.Err != nil {
 		return s
 	}
-	m["sheetId"] = s.id
+	m["sheetId"] = s.sheetMeta.SheetID
 	_, _, err := s.ssClient.origin.SheetBatchUpdate(map[ModifySheetType]interface{}{
 		ModifySheetUpdate: map[string]interface{}{
 			"properties": m,
@@ -318,14 +322,14 @@ func (s *Sheet) updateBase(m map[string]interface{}) *Sheet {
 func (s *Sheet) getMeta() (*sheetMeta, error) {
 	meta, err := s.ssClient.GetMeta()
 	if err != nil {
-		return nil, fmt.Errorf("get sheet meta, sheetID: %s, err: %s", s.id, err.Error())
+		return nil, fmt.Errorf("get sheet meta, sheetID: %s, err: %s", s.sheetMeta.SheetID, err.Error())
 	}
 	for _, v := range meta.Sheets {
-		if v.SheetID == s.id {
+		if v.SheetID == s.sheetMeta.SheetID {
 			return &v, nil
 		}
 	}
-	return nil, fmt.Errorf("get sheet meta, sheetID: %s, can not find this sheet", s.id)
+	return nil, fmt.Errorf("get sheet meta, sheetID: %s, can not find this sheet", s.sheetMeta.SheetID)
 }
 
 /*

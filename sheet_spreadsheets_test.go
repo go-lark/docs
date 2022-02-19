@@ -10,7 +10,7 @@ import (
 )
 
 func TestSpreadSheetsBind(t *testing.T) {
-	c := getSheetClient().SheetID("2BGf04")
+	c := getSpreadSheet().GetSheetByID("2BGf04")
 	rows, err := c.GetRows(true)
 	assert.NoError(t, err)
 	assert.NotZero(t, len(rows))
@@ -38,7 +38,7 @@ func TestSpreadSheets_ChangeOwner(t *testing.T) {
 	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
 	assert.NoError(t, ss.Err)
 	t.Log(baseDomain + "/sheets/" + ss.token)
-	sheet := ss.SheetIndex(0).WriteRows(
+	sheet := ss.GetSheetByIndex(0).WriteRows(
 		[]string{"name", "age"},
 		[][]interface{}{
 			{"Ace", 1},
@@ -65,14 +65,14 @@ func TestSpreadSheets_Meta(t *testing.T) {
 }
 
 func TestSpreadSheets_Content(t *testing.T) {
-	c := getSheetClient().SheetID("f6d5a1")
+	c := getSpreadSheet().GetSheetByID("f6d5a1")
 	res, err := c.GetContentByRange("A1", "A1")
 	assert.Nil(t, err)
 	assert.NotZero(t, len(res.ToRows()))
 }
 
 func TestSpreadSheets_V2(t *testing.T) {
-	c := getSheetClient().SheetID("2BGf04")
+	c := getSpreadSheet().GetSheetByID("2BGf04")
 	res, err := c.GetContentByRangeV2("A1", "A1", SheetRenderFormula, "")
 	assert.Nil(t, err)
 	assert.NotZero(t, len(res.ToRows()))
@@ -80,7 +80,7 @@ func TestSpreadSheets_V2(t *testing.T) {
 }
 
 func TestSpreadSheets_GetContent(t *testing.T) {
-	c := getSheetClient().SheetID("2BGf04")
+	c := getSpreadSheet().GetSheetByID("2BGf04")
 	rows, err := c.GetRows(true)
 	assert.NoError(t, err)
 	assert.NotZero(t, len(rows))
@@ -93,7 +93,7 @@ func TestSpreadSheets_GetContent(t *testing.T) {
 }
 
 func TestSpreadSheets_WriteRows(t *testing.T) {
-	sheet := getSheetClient().SheetName("Sheet1")
+	sheet := getSpreadSheet().GetSheetByName("Sheet1")
 	assert.NoError(t, sheet.Err)
 	title := []string{"first col", "second col", "third col"}
 	data := [][]interface{}{
@@ -109,7 +109,7 @@ func TestSpreadSheets_WriteRows(t *testing.T) {
 }
 
 func TestSpreadSheets_WriteALotRows(t *testing.T) {
-	sheet := getSheetClient().SheetName("Sheet1")
+	sheet := getSpreadSheet().GetSheetByName("Sheet1")
 	assert.NoError(t, sheet.Err)
 	data := [][]interface{}{}
 	colCount := 10
@@ -178,26 +178,57 @@ func TestSpreadSheets_ColnameSplit(t *testing.T) {
 	}
 }
 
+func TestGetSheet(t *testing.T) {
+	spreadSheet := getSpreadSheet()
+	sheet := spreadSheet.GetSheetByIndex(0)
+	assert.NoError(t, sheet.Err)
+	assert.NotEmpty(t, sheet.GetID())
+	sheet = spreadSheet.GetSheetByID(sheet.GetID())
+	assert.NoError(t, sheet.Err)
+	assert.NotEmpty(t, sheet.GetID())
+	sheet = spreadSheet.GetSheetByName(sheet.GetName())
+	assert.NoError(t, sheet.Err)
+	assert.NotEmpty(t, sheet.GetID())
+}
+
 func TestSpreadSheets_UpdateTitle(t *testing.T) {
-	ss := getSheetClient().UpdateTitle("update title")
-	assert.Nil(t, ss.Err)
+	meta, err := getSpreadSheet().GetMeta()
+	assert.NoError(t, err)
+	oldTtitle := meta.Properties.Title
+	newTitle := "update title"
+	ss := getSpreadSheet().UpdateTitle(newTitle)
+	assert.NoError(t, ss.Err)
+	meta, err = getSpreadSheet().GetMeta()
+	assert.NoError(t, err)
+	assert.Equal(t, newTitle, meta.Properties.Title)
+	ss = getSpreadSheet().UpdateTitle(oldTtitle)
+	assert.NoError(t, ss.Err)
 }
 
 func TestSpreadSheets_AddSheet(t *testing.T) {
 	title := "t" + stringx.GenRankStr(5)
-	sheet := getSheetClient().AddSheet(title, 0)
-	assert.Nil(t, sheet.Err)
-	assert.NotEmpty(t, sheet.id)
+	sheet := getSpreadSheet().CreateSheet(title, 0)
+	assert.NoError(t, sheet.Err)
+	assert.NotEmpty(t, sheet.GetID())
 	newSheetID := sheet.GetID()
-	sheet = getSheetClient().CopySheet("4gJAV3", "t"+stringx.GenRankStr(5))
-	assert.Nil(t, sheet.Err)
-	assert.NotEmpty(t, sheet.id)
-	ss := getSheetClient().DeleteSheet(newSheetID)
-	assert.Nil(t, ss.Err)
+	newTitle := "copy a new sheet"
+	sheet = getSpreadSheet().CopySheet(sheet.GetID(), newTitle)
+	assert.NoError(t, sheet.Err)
+	assert.NotEmpty(t, sheet.GetID())
+	ss := getSpreadSheet().DeleteSheet(newSheetID)
+	assert.NoError(t, ss.Err)
+	ss = getSpreadSheet().DeleteSheet(sheet.GetID())
+	assert.NoError(t, ss.Err)
 }
 
-func getSheetClient() *SpreadSheets {
-	sheet := getClientNew().OpenSpreadSheets(testSpreadSheetToken)
+func TestCreateSpreadSheet(t *testing.T) {
+	spreadSheet := getClient().RootFolder().CreateSpreadSheet("a test sheet")
+	assert.NoError(t, spreadSheet.Err)
+	t.Log(spreadSheet.GetToken())
+}
+
+func getSpreadSheet() *SpreadSheets {
+	sheet := getClient().OpenSpreadSheets(testSpreadSheetToken)
 	return sheet
 }
 

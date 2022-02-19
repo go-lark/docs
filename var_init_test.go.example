@@ -7,9 +7,6 @@ func init() {
 	testAPPID = ""
 	testAPPSecret = ""
 
-	testAPPID2 = ""
-	testAPPSecret2 = ""
-
 	testSpreadSheetToken = ""
 	testDocToken = ""
 	testFolderToken = ""

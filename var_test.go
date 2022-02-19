@@ -7,10 +7,6 @@ var (
 	testAPPID     = ""
 	testAPPSecret = ""
 
-	// for test bot with backend token
-	testAPPID2     = ""
-	testAPPSecret2 = ""
-
 	// docs file token
 	testSpreadSheetToken = ""
 	testDocToken         = ""
@@ -18,4 +14,5 @@ var (
 
 	testBigFile   = ""
 	testUserEmail = ""
+	testUserID    = ""
 )
