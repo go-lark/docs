@@ -9,31 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSpreadSheetsBind(t *testing.T) {
-	c := getSpreadSheet().GetSheetByID("2BGf04")
-	rows, err := c.GetRows(true)
-	assert.NoError(t, err)
-	assert.NotZero(t, len(rows))
-	t.Log("count: ", len(rows))
-	for i, v := range rows {
-		for j, vv := range v {
-			t.Logf("%d, %d, %v", i, j, vv.ToString())
-		}
-	}
-}
-
-func TestColCul(t *testing.T) {
-	data := map[string]int{
-		"A":  1,
-		"Z":  26,
-		"AA": 27,
-	}
-	for k, v := range data {
-		r := colName2Num(k)
-		assert.Equal(t, v, r, k)
-	}
-}
-
 func TestSpreadSheets_ChangeOwner(t *testing.T) {
 	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
 	assert.NoError(t, ss.Err)
@@ -50,90 +25,16 @@ func TestSpreadSheets_ChangeOwner(t *testing.T) {
 }
 
 func TestSpreadSheets_AddMember(t *testing.T) {
-	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).
-		Share(PermEdit, false, NewMemberWithEmail(testUserEmail))
-	assert.NoError(t, ss.Err)
-	t.Log(ss.token)
-}
-
-func TestSpreadSheets_Meta(t *testing.T) {
-	sheet := getClientNew().OpenSpreadSheets(testSpreadSheetToken)
-	meta, err := sheet.GetMeta()
-	assert.NoError(t, err)
-	assert.NotZero(t, len(meta.Sheets))
-	t.Log(meta.Sheets[0].Merges[0])
-}
-
-func TestSpreadSheets_Content(t *testing.T) {
-	c := getSpreadSheet().GetSheetByID("f6d5a1")
-	res, err := c.GetContentByRange("A1", "A1")
-	assert.Nil(t, err)
-	assert.NotZero(t, len(res.ToRows()))
-}
-
-func TestSpreadSheets_V2(t *testing.T) {
-	c := getSpreadSheet().GetSheetByID("2BGf04")
-	res, err := c.GetContentByRangeV2("A1", "A1", SheetRenderFormula, "")
-	assert.Nil(t, err)
-	assert.NotZero(t, len(res.ToRows()))
-	t.Log(res)
-}
-
-func TestSpreadSheets_GetContent(t *testing.T) {
-	c := getSpreadSheet().GetSheetByID("2BGf04")
-	rows, err := c.GetRows(true)
-	assert.NoError(t, err)
-	assert.NotZero(t, len(rows))
-	t.Log("count: ", len(rows))
-	for i, v := range rows {
-		for j, vv := range v {
-			t.Logf("%d, %d, %v", i, j, vv.ToString())
-		}
-	}
-}
-
-func TestSpreadSheets_WriteRows(t *testing.T) {
-	sheet := getSpreadSheet().GetSheetByName("Sheet1")
-	assert.NoError(t, sheet.Err)
-	title := []string{"first col", "second col", "third col"}
-	data := [][]interface{}{
-		{"1", "2", "3"},
-		{1, 2, 3},
-		{4, nil, 6},
-		{7, "", 9},
-	}
-	sheet = sheet.WriteRows(title, nil)
-	assert.Nil(t, sheet.Err)
-	sheet = sheet.WriteRows(title, data)
-	assert.Nil(t, sheet.Err)
-}
-
-func TestSpreadSheets_WriteALotRows(t *testing.T) {
-	sheet := getSpreadSheet().GetSheetByName("Sheet1")
-	assert.NoError(t, sheet.Err)
-	data := [][]interface{}{}
-	colCount := 10
-	rowCount := 10
-	for i := 0; i < rowCount; i++ {
-		d := make([]interface{}, 0, colCount)
-		for j := 0; j < colCount; j++ {
-			if j == 0 {
-				d = append(d, i)
-			} else {
-				d = append(d, j)
-			}
-		}
-		data = append(data, d)
-	}
-	sheet = sheet.WriteRows(nil, data)
-	assert.Nil(t, sheet.Err)
-}
-
-func TestASCII(t *testing.T) {
-	fmt.Printf("%d\n", 'A')
-	fmt.Printf("%d\n", 'Z')
-	fmt.Println(int('A'))
-	fmt.Println(string(byte(66)))
+	spreadSheet := getClient().RootFolder().CreateSpreadSheet("create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
+	assert.NoError(t, spreadSheet.Err)
+	u := NewMemberWithUserID(testUserID)
+	spreadSheet = spreadSheet.Share(PermEdit, false, u)
+	assert.NoError(t, spreadSheet.Err)
+	t.Log(spreadSheet.GetToken())
+	spreadSheet = spreadSheet.UnShare(u)
+	assert.NoError(t, spreadSheet.Err)
+	//err := spreadSheet.DeleteSelf()
+	//assert.NoError(t, err)
 }
 
 func TestNow(t *testing.T) {
@@ -227,8 +128,8 @@ func TestCreateSpreadSheet(t *testing.T) {
 	t.Log(spreadSheet.GetToken())
 }
 
-func getSpreadSheet() *SpreadSheets {
-	sheet := getClient().OpenSpreadSheets(testSpreadSheetToken)
+func getSpreadSheet() *SpreadSheet {
+	sheet := getClient().OpenSpreadSheet(testSpreadSheetToken)
 	return sheet
 }
 

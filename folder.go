@@ -100,8 +100,8 @@ func (f *Folder) CreateDoc(title *doctypes.Title, body *doctypes.Body) (doc *Doc
 }
 
 // CreateSpreadSheet ...
-func (f *Folder) CreateSpreadSheet(title string) (ss *SpreadSheets) {
-	ss = &SpreadSheets{}
+func (f *Folder) CreateSpreadSheet(title string) (ss *SpreadSheet) {
+	ss = &SpreadSheet{}
 	if f.Err != nil {
 		ss.Err = f.Err
 		return
@@ -111,7 +111,7 @@ func (f *Folder) CreateSpreadSheet(title string) (ss *SpreadSheets) {
 		ss.Err = err
 		return
 	}
-	return newSpreadSheets(res.Token, f.baseClient)
+	return newSpreadSheet(res.Token, f.baseClient)
 }
 
 // UploadFile is used for uploading small file(less than 20MB)

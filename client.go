@@ -62,14 +62,14 @@ func (c *Client) CommonReq(_req *http.Request, dst interface{}) ([]byte, error) 
 		if _req.GetBody != nil {
 			_body, err1 := _req.GetBody()
 			if err1 != nil {
-				log.Debugf("common req, get body, %s", err1.Error())
+				log.Debugf("requeset, get body fail, %s", err1.Error())
 			}
 			reqBody, err1 = ioutil.ReadAll(_body)
 			if err1 != nil {
-				log.Debugf("common req,read body, %s", err1.Error())
+				log.Debugf("common req,read body fail, %s", err1.Error())
 			}
 		}
-		log.Debugf("common req, method: %s url: %s, body: %s\n", _req.Method, reqURL, string(reqBody))
+		log.Debugf("request method: %s url: %s body: %s", _req.Method, reqURL, string(reqBody))
 	}
 	return c.DoRequest(_req, dst)
 }
@@ -95,10 +95,11 @@ func (c *Client) DoRequest(_req *http.Request, dst interface{}) ([]byte, error) 
 	}
 	defer res.Body.Close()
 	body := &respBody{}
-	_, err = httpx.HandleResp(res, body)
+	b, err := httpx.HandleResp(res, body)
 	if err != nil {
-		return nil, fmt.Errorf("common req, hanle resp, url: %s, %w", reqURL, err)
+		return nil, fmt.Errorf("common req, handle resp, url: %s, %w", reqURL, err)
 	}
+	logrus.Debugf("response body: %s", string(b))
 	if body.Code != 0 {
 		return nil, &Err{Code: body.Code, Msg: body.Msg}
 	}
@@ -109,13 +110,13 @@ func (c *Client) DoRequest(_req *http.Request, dst interface{}) ([]byte, error) 
 	return body.Data, nil
 }
 
-// SpreadSheets is for Sheets use
+// SpreadSheet is for Sheets use
 // Parameter
 //  spreadSheetToken: token of a spreadsheets.
 // Note
-//  in a spreadsheets url, for example: https://abc.feishu.cn/sheets/shtcnjvusYPizPzZ8JqIWyCP7ca, shtcnjvusYPizPzZ8JqIWyCP7ca is the token
-func (c *Client) OpenSpreadSheets(spreadSheetToken string) *SpreadSheets {
-	ss := &SpreadSheets{}
+//  in a spreadsheet url, for example: https://abc.feishu.cn/sheets/shtcnjvusYPizPzZ8JqIWyCP7ca, shtcnjvusYPizPzZ8JqIWyCP7ca is the token
+func (c *Client) OpenSpreadSheet(spreadSheetToken string) *SpreadSheet {
+	ss := &SpreadSheet{}
 	ss.baseClient = c
 	ss.token = spreadSheetToken
 	return ss

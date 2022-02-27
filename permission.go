@@ -42,6 +42,21 @@ func (p *permission) Add(fileToken string, fileType FileType, perm Perm, notify 
 	return nil
 }
 
+func (p *permission) Remove(fileToken string, fileType FileType, members ...*Member) error {
+	for _, member := range members {
+		path := fmt.Sprintf("/open-apis/drive/v1/permissions/%s/members/%s?type=%s&member_type=%s",
+			fileToken, member.MemberID, fileType, member.MemberType,
+		)
+		url := p.baseClient.urlJoin(path)
+		req, _ := http.NewRequest(http.MethodDelete, url, nil)
+		_, err := p.baseClient.CommonReq(req, nil)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // TransferOwner for transferring the ownership.
 // reference https://open.larksuite.com/document/uMzMyEjLzMjMx4yMzITM/uUDN5UjL1QTO14SN0kTN
 // 转移拥有者

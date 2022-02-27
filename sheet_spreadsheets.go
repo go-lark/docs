@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-func newSpreadSheets(token string, client *Client) *SpreadSheets {
-	s := &SpreadSheets{
+func newSpreadSheet(token string, client *Client) *SpreadSheet {
+	s := &SpreadSheet{
 		baseClient: client,
 	}
 	s.token = token
 	return s
 }
 
-// SpreadSheets represent a group of sheet
-type SpreadSheets struct {
+// SpreadSheet represent a group of sheet
+type SpreadSheet struct {
 	Err error
 	tokenIns
 	baseClient *Client
@@ -25,7 +25,7 @@ type SpreadSheets struct {
 
 // GetOrigin get origin client, with is use origin open API.
 // 获取原始客户端，这个客户端直接使用开放平台文档上的 API，没有做任何封装
-func (ss *SpreadSheets) GetOrigin() *SpreadSheetOrigin {
+func (ss *SpreadSheet) GetOrigin() *SpreadSheetOrigin {
 	if ss.origin == nil {
 		ss.origin = newSpreadSheetOrigin(ss.baseClient, ss.token)
 	}
@@ -34,7 +34,7 @@ func (ss *SpreadSheets) GetOrigin() *SpreadSheetOrigin {
 
 // GetMeta get spread sheet meta information.
 // 获取这个表格的元信息。
-func (ss *SpreadSheets) GetMeta() (res *SpreadSheetMeta, err error) {
+func (ss *SpreadSheet) GetMeta() (res *SpreadSheetMeta, err error) {
 	if ss.Err != nil {
 		return nil, ss.Err
 	}
@@ -45,7 +45,7 @@ func (ss *SpreadSheets) GetMeta() (res *SpreadSheetMeta, err error) {
 // UpdateTitle
 // Parameter
 //  title: tile of spreadsheet
-func (ss *SpreadSheets) UpdateTitle(title string) *SpreadSheets {
+func (ss *SpreadSheet) UpdateTitle(title string) *SpreadSheet {
 	if ss.Err != nil {
 		return ss
 	}
@@ -60,7 +60,7 @@ func (ss *SpreadSheets) UpdateTitle(title string) *SpreadSheets {
 // Note:
 //  Sheet id can be found in url, for example in the url https://laily.feishu.cn/sheets/shtcnLML6348M7ujOaYd1EsUe9f?sheet=5d8cef
 // sheet id is 5d8cef
-func (ss *SpreadSheets) DeleteSheet(sheetID string) *SpreadSheets {
+func (ss *SpreadSheet) DeleteSheet(sheetID string) *SpreadSheet {
 	if ss.Err != nil {
 		return ss
 	}
@@ -74,7 +74,11 @@ func (ss *SpreadSheets) DeleteSheet(sheetID string) *SpreadSheets {
 	return ss
 }
 
-func (ss *SpreadSheets) ModifyProperties(args *ModifyProperties) *SpreadSheets {
+func (ss *SpreadSheet) DeleteSelf() error {
+	return newFile(ss.baseClient).deleteSpreadSheet(ss.GetToken())
+}
+
+func (ss *SpreadSheet) ModifyProperties(args *ModifyProperties) *SpreadSheet {
 	if ss.Err != nil {
 		return ss
 	}
@@ -87,20 +91,27 @@ func (ss *SpreadSheets) ModifyProperties(args *ModifyProperties) *SpreadSheets {
 	return ss
 }
 
-// Share to other user or group.
-func (ss *SpreadSheets) Share(perm Perm, notify bool, members ...*Member) *SpreadSheets {
+// Share this document to user or group.
+func (ss *SpreadSheet) Share(perm Perm, notify bool, members ...*Member) *SpreadSheet {
 	if ss.Err != nil {
 		return ss
 	}
 	err := ss.baseClient.permission().Add(ss.token, FileTypeSheet, perm, notify, members...)
-	if err != nil {
-		ss.Err = err
-		return ss
-	}
+	ss.Err = err
 	return ss
 }
 
-func (ss *SpreadSheets) ChangeOwner(newOwner *Member, removeOldOwner, notify bool) *SpreadSheets {
+// UnShare this document to other user or group.
+func (ss *SpreadSheet) UnShare(members ...*Member) *SpreadSheet {
+	if ss.Err != nil {
+		return ss
+	}
+	err := ss.baseClient.permission().Remove(ss.token, FileTypeSheet, members...)
+	ss.Err = err
+	return ss
+}
+
+func (ss *SpreadSheet) ChangeOwner(newOwner *Member, removeOldOwner, notify bool) *SpreadSheet {
 	if ss.Err != nil {
 		return ss
 	}
@@ -111,13 +122,13 @@ func (ss *SpreadSheets) ChangeOwner(newOwner *Member, removeOldOwner, notify boo
 	return ss
 }
 
-func (ss *SpreadSheets) SetAccessPermission(per string) *SpreadSheets {
+func (ss *SpreadSheet) SetAccessPermission(per string) *SpreadSheet {
 	return ss.setPublic(&PublicSet{
 		LinkShareEntity: &per,
 	})
 }
 
-func (ss *SpreadSheets) setPublic(args *PublicSet) *SpreadSheets {
+func (ss *SpreadSheet) setPublic(args *PublicSet) *SpreadSheet {
 	if ss.Err != nil {
 		return ss
 	}
@@ -129,7 +140,7 @@ func (ss *SpreadSheets) setPublic(args *PublicSet) *SpreadSheets {
 // CreateSheet
 // Parameter
 //  index: first position is 0
-func (ss *SpreadSheets) CreateSheet(title string, index int) *Sheet {
+func (ss *SpreadSheet) CreateSheet(title string, index int) *Sheet {
 	sheet := &Sheet{}
 	if ss.Err != nil {
 		sheet.Err = ss.Err
@@ -158,7 +169,7 @@ func (ss *SpreadSheets) CreateSheet(title string, index int) *Sheet {
 
 // SheetID get sheet by sheet id
 // 根据 sheet id 获取 sheet 实例。
-func (ss *SpreadSheets) GetSheetByID(sheetID string) *Sheet {
+func (ss *SpreadSheet) GetSheetByID(sheetID string) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
@@ -176,7 +187,7 @@ func (ss *SpreadSheets) GetSheetByID(sheetID string) *Sheet {
 }
 
 // SheetIndex get a sheet instance by index. Index start from 1
-func (ss *SpreadSheets) GetSheetByIndex(index int) *Sheet {
+func (ss *SpreadSheet) GetSheetByIndex(index int) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
@@ -194,7 +205,7 @@ func (ss *SpreadSheets) GetSheetByIndex(index int) *Sheet {
 }
 
 // SheetName get sheet by sheet name
-func (ss *SpreadSheets) GetSheetByName(name string) *Sheet {
+func (ss *SpreadSheet) GetSheetByName(name string) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
 	if err != nil {
@@ -215,7 +226,7 @@ func (ss *SpreadSheets) GetSheetByName(name string) *Sheet {
 // Pareameter
 //  sourceSheetID: sheet ID of which will be copied.
 //  title: title of new sheet.
-func (ss *SpreadSheets) CopySheet(sourceSheetID string, title string) (sheet *Sheet) {
+func (ss *SpreadSheet) CopySheet(sourceSheetID string, title string) (sheet *Sheet) {
 	sheet = &Sheet{}
 	if ss.Err != nil {
 		sheet.Err = ss.Err

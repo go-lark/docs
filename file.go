@@ -68,6 +68,13 @@ func (f *File) Copy(srcFileToken string, srcFileType FileType, dstFolderToken, d
 	return b, resp, err
 }
 
+func (f *File) deleteSpreadSheet(token string) error {
+	path := f.baseClient.urlJoin("/open-apis/drive/explorer/v2/file/spreadsheets/" + token)
+	req, _ := http.NewRequest(http.MethodDelete, path, nil)
+	_, err := f.baseClient.CommonReq(req, nil)
+	return err
+}
+
 // UpdateAll
 // Return
 //  1: token of the file

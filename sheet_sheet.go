@@ -15,7 +15,7 @@ const (
 	defautWriteRowCount = 5000
 )
 
-func newSheet(sheetMeta *sheetMeta, client *SpreadSheets) *Sheet {
+func newSheet(sheetMeta *sheetMeta, client *SpreadSheet) *Sheet {
 	s := &Sheet{
 		ssClient:  client,
 		sheetMeta: sheetMeta,
@@ -28,7 +28,7 @@ func newSheet(sheetMeta *sheetMeta, client *SpreadSheets) *Sheet {
 type Sheet struct {
 	Err       error
 	sheetMeta *sheetMeta
-	ssClient  *SpreadSheets
+	ssClient  *SpreadSheet
 
 	//	*SheetRange
 }
