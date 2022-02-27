@@ -49,3 +49,7 @@ func (d interData) ToFloat() (float64, error) {
 func (d interData) ToString() string {
 	return fmt.Sprintf("%v", d.val)
 }
+
+func (d interData) Value() interface{} {
+	return d.val
+}

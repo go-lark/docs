@@ -10,9 +10,32 @@ var (
 	sheet *Sheet
 )
 
+func TestWriteAndReadData(t *testing.T) {
+	sheet := getSheetClient().AddSheet("test write and read", 0)
+	assert.NoError(t, sheet.Err)
+	sheet.NewRangeFull("F2", "F2").SetDropdown([]string{"Monday", "Tuesday", "Wednesday"}, true, nil)
+	sheet.WriteRows([][]interface{}{
+		{"string", "no text link", "link", "email", "user", "formula"},
+		{"test string", "https://z.cn", SheetCellTypeLink("amazon", "https://z.cn"),
+			SheetCellTypeMentionEmail("", false, true), SheetCellTypeFormula("=A1"),
+			SheetCellTypeDropdown([]interface{}{"Monday", "Tuesday"}),
+		},
+	})
+	assert.NoError(t, sheet.Err)
+	rows, err := sheet.ReadRows()
+	assert.NoError(t, err)
+	rows = sheet.TrimBlankTail(rows)
+	for _, row := range rows {
+		for _, cell := range row {
+			t.Log(cell.Value())
+		}
+	}
+}
+
 func TestSheet_moveRowOrColumn(t *testing.T) {
 	getSheet()
-	sheet.WriteRows([]string{"a", "b", "c"}, [][]interface{}{
+	sheet.WriteRows([][]interface{}{
+		{"a", "b", "c"},
 		{"d", "e", "f"},
 		{"g", "h", "k"},
 	})

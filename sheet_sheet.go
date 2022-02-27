@@ -124,8 +124,8 @@ func (s *Sheet) GetContentByRangeV2(startCellname, endCellname string, render Sh
 	return content, err
 }
 
-// GetRows for get all rows
-func (s *Sheet) GetRows(withFirstLine bool) ([]SheetRow, error) {
+// ReadRows for get all rows
+func (s *Sheet) ReadRows() ([]SheetRow, error) {
 	meta, err := s.getMeta()
 	if err != nil {
 		return nil, err
@@ -134,16 +134,30 @@ func (s *Sheet) GetRows(withFirstLine bool) ([]SheetRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows := content.ToRows()
-	if len(rows) > 1 && !withFirstLine {
-		rows = rows[1:]
+	return content.ToRows(), nil
+}
+
+func (s *Sheet) TrimBlankTail(rows []SheetRow) []SheetRow {
+	w := len(rows) - 1
+	if w == 0 {
+		return rows
 	}
-	return rows, nil
+	for {
+		for _, v := range rows[w] {
+			if v.val != nil {
+				return rows[:w+1]
+			}
+		}
+		w--
+		if w == 0 {
+			return rows[:w]
+		}
+	}
 }
 
 // WriteRows write rows line by line, start from A1 cell
-func (s *Sheet) WriteRows(title []string, data [][]interface{}, batchCount ...int) *Sheet {
-	return s.WriteRowsByStartCell("A1", title, data, batchCount...)
+func (s *Sheet) WriteRows(data [][]interface{}, batchCount ...int) *Sheet {
+	return s.WriteRowsByStartCell("A1", nil, data, batchCount...)
 }
 
 // WriteRowsByStartCell
