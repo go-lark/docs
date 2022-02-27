@@ -104,8 +104,8 @@ func genParagraph() []doctypes.IBlocks {
 		doctypes.NewBlockParagraph(doctypes.NewElementTextRun("我是 paragraph")).HeadingLevel(doctypes.ParagraphHeadineLevel2),
 		doctypes.NewBlockParagraph(
 			doctypes.NewElementTextRun("以下都是 elements，放到同一行"),
-			doctypes.NewElementPerson("ou_3bbe8a09c20e89cce9bff989ed840674"),
-			doctypes.NewElementDocsLink(baseDomain+"/docs/doccnMao97bBZWcWfVG3A6NJBTg"),
+			doctypes.NewElementPerson("ou_3bbe8a09c20e89cce9bff989ed840675"),
+			doctypes.NewElementDocsLink(baseDomain+"/docs/doccnMao97bBZWcWfVG3A6NJBTr"),
 			doctypes.NewElementReminder(false, 1600507800, false, doctypes.ReminderNotify1dBefore),
 			doctypes.NewElementEquation("E_n = - R_H \\left( {\\frac{1}{{n^2 }}} \\right) = \\frac{{ - 2.178 \\times 10^{ - 18} }}{{n^2 }}joule"),
 		),

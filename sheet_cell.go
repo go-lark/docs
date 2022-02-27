@@ -21,6 +21,11 @@ func (s SheetCell) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.interData.val)
 }
 
+/*
+	data structure sheet support
+	https://open.feishu.cn/document/ukTMukTMukTM/ugjN1UjL4YTN14CO2UTN
+*/
+
 // SheetCellTypeLink ...
 func SheetCellTypeLink(title, link string) interface{} {
 	return map[string]string{
@@ -66,6 +71,20 @@ func SheetCellTypeDocument(docType FileType, docToken string) interface{} {
 		"textType": "fileToken",
 		"text":     docToken,
 		"objType":  docType,
+	}
+}
+
+func SheetCellTypeFormula(text string) interface{} {
+	return map[string]string{
+		"type": "formula",
+		"text": text,
+	}
+}
+
+func SheetCellTypeDropdown(text []interface{}) interface{} {
+	return map[string]interface{}{
+		"type":   "multipleValue",
+		"values": text,
 	}
 }
 

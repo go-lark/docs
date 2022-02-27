@@ -1,7 +1,10 @@
 package docs
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 	"strconv"
 )
@@ -70,6 +73,30 @@ func (s *SheetRange) Find(keyword string, matchCase, matchEntireCell, regex, inc
 func (s *SheetRange) Replace() {}
 */
 
+// SetDropdown
+// Parameter:
+//  colors: set highlight color of values, could be nil. values like #1FB6C1
+// Reference:
+//  https://open.feishu.cn/document/ukTMukTMukTM/uATMzUjLwEzM14CMxMTN/datavalidation/set-dropdown
+func (s *SheetRange) SetDropdown(values []string, multiple bool, colors []string) error {
+	body, _ := json.Marshal(map[string]interface{}{
+		"range":              s.genRangeStr(),
+		"dataValidationType": "list",
+		"dataValidation": map[string]interface{}{
+			"conditionValues": values,
+			"options": map[string]interface{}{
+				"multipleValues":     multiple,
+				"highlightValidData": len(colors) > 0,
+				"colors":             colors,
+			},
+		},
+	})
+	_url := s.sheet.ssClient.baseClient.urlJoin("open-apis/sheets/v2/spreadsheets/" + s.sheet.ssClient.GetToken() + "/dataValidation")
+	req, _ := http.NewRequest(http.MethodPost, _url, bytes.NewReader(body))
+	_, err := s.sheet.ssClient.baseClient.CommonReq(req, nil)
+	return err
+}
+
 // Rows ...
 func (s *SheetRange) Rows() ([]SheetRow, error) {
 	if s.Err != nil {
@@ -121,7 +148,7 @@ func (s *SheetRange) Scan(ptr interface{}) error {
 	return s.scan(rows, ptr)
 }
 
-func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
+func (s *SheetRange) scan(rows []SheetRow, ptr interface{}) error {
 	// check it args is a pointer
 	rv := reflect.ValueOf(ptr)
 	if rv.Kind() != reflect.Ptr {
@@ -158,7 +185,7 @@ func (s *SheetRange) scan(cells []SheetRow, ptr interface{}) error {
 			fieldPosition[i] = i
 		}
 	}
-	for _, row := range cells {
+	for _, row := range rows {
 		// new a slice element
 		valP := reflect.New(elemt)
 		// dereference pointer

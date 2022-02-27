@@ -14,8 +14,8 @@ func Example_createSheet() {
 	spreadSheets := NewClient("", "").RootFolder().CreateSpreadSheet("sheet title")
 	spreadSheets.Share(PermEdit, false, NewMemberWithEmail("aa.com"))
 	err := spreadSheets.SheetIndex(1).WriteRows(
-		[]string{"name", "age"},
 		[][]interface{}{
+			{"name", "age"},
 			{"Ace", 10},
 			{"Bob", 11},
 		},

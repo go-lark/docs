@@ -11,7 +11,7 @@ import (
 
 func TestSpreadSheetsBind(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")
-	rows, err := c.GetRows(true)
+	rows, err := c.ReadRows()
 	assert.NoError(t, err)
 	assert.NotZero(t, len(rows))
 	t.Log("count: ", len(rows))
@@ -39,8 +39,8 @@ func TestSpreadSheets_ChangeOwner(t *testing.T) {
 	assert.NoError(t, ss.Err)
 	t.Log(baseDomain + "/sheets/" + ss.token)
 	sheet := ss.SheetIndex(0).WriteRows(
-		[]string{"name", "age"},
 		[][]interface{}{
+			{"name", "age"},
 			{"Ace", 1},
 			{"Bob", 2},
 			{"", ""},
@@ -81,7 +81,7 @@ func TestSpreadSheets_V2(t *testing.T) {
 
 func TestSpreadSheets_GetContent(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")
-	rows, err := c.GetRows(true)
+	rows, err := c.ReadRows()
 	assert.NoError(t, err)
 	assert.NotZero(t, len(rows))
 	t.Log("count: ", len(rows))
@@ -95,16 +95,14 @@ func TestSpreadSheets_GetContent(t *testing.T) {
 func TestSpreadSheets_WriteRows(t *testing.T) {
 	sheet := getSheetClient().SheetName("Sheet1")
 	assert.NoError(t, sheet.Err)
-	title := []string{"first col", "second col", "third col"}
 	data := [][]interface{}{
+		{"first col", "second col", "third col"},
 		{"1", "2", "3"},
 		{1, 2, 3},
 		{4, nil, 6},
 		{7, "", 9},
 	}
-	sheet = sheet.WriteRows(title, nil)
-	assert.Nil(t, sheet.Err)
-	sheet = sheet.WriteRows(title, data)
+	sheet = sheet.WriteRows(data)
 	assert.Nil(t, sheet.Err)
 }
 
@@ -125,7 +123,7 @@ func TestSpreadSheets_WriteALotRows(t *testing.T) {
 		}
 		data = append(data, d)
 	}
-	sheet = sheet.WriteRows(nil, data)
+	sheet = sheet.WriteRows(data)
 	assert.Nil(t, sheet.Err)
 }
 
