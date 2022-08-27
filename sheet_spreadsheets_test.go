@@ -68,14 +68,16 @@ func TestSpreadSheets_Content(t *testing.T) {
 	c := getSheetClient().SheetID("f6d5a1")
 	res, err := c.GetContentByRange("A1", "A1")
 	assert.Nil(t, err)
-	assert.NotZero(t, len(res.ToRows()))
+	l, _ := res.ToRows()
+	assert.NotZero(t, l)
 }
 
 func TestSpreadSheets_V2(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")
 	res, err := c.GetContentByRangeV2("A1", "A1", SheetRenderFormula, "")
 	assert.Nil(t, err)
-	assert.NotZero(t, len(res.ToRows()))
+	l, _ := res.ToRows()
+	assert.NotZero(t, l)
 	t.Log(res)
 }
 

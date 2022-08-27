@@ -3,12 +3,108 @@ package docs
 import (
 	"testing"
 
+	"github.com/agiledragon/gomonkey/v2"
+	"github.com/hilaily/kit/dev"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	sheet *Sheet
 )
+
+/*
+func TestReadContent(t *testing.T) {
+	Convey("TestReadContent", t, func() {
+		token := "shtcnPsIPv4woYKzSizh4rruCJe"
+		sheet := getSheetClient().baseClient.OpenSpreadSheets(token).SheetIndex(1)
+		So(sheet.Err, ShouldBeNil)
+		rows, err := sheet.NewRangeFull("A1", "B2").Content().ToRows()
+
+	})
+}
+*/
+
+func TestSheetContent(t *testing.T) {
+	Convey("TestSheetContent", t, func() {
+		content := &SheetContent{
+			ValueRange: valueRange{
+				Values: [][]interface{}{
+					{"ace", nil},
+					{nil, nil},
+				},
+			},
+		}
+
+		Convey("not perse merge, not trim blank tail", func() {
+			rows, err := content.ToRows()
+			So(err, ShouldBeNil)
+			So(rows, ShouldResemble, []SheetRow{
+				{NewSheetCell("ace"), NewSheetCell(nil)},
+				{NewSheetCell(nil), NewSheetCell(nil)},
+			})
+		})
+		Convey("not perse merge, trim blank tail", func() {
+			rows, err := content.ToRowsTrimBlankTail()
+			So(err, ShouldBeNil)
+			So(rows, ShouldResemble, []SheetRow{
+				{NewSheetCell("ace"), NewSheetCell(nil)},
+			})
+		})
+		Convey("perse merge, not trim blank tail", func() {
+			var mSheet *Sheet
+			meta := &sheetMeta{
+				Merges: []*sheetMetaMerge{
+					{
+						ColumnCount:      2,
+						RowCount:         2,
+						StartColumnIndex: 0,
+						StartRowIndex:    0,
+					},
+				},
+			}
+			p := gomonkey.ApplyPrivateMethod(mSheet, "getMeta", func(_ *Sheet) (*sheetMeta, error) {
+				return meta, nil
+			})
+			defer p.Reset()
+			rows, err := content.ToRowsParseMerged()
+			So(err, ShouldBeNil)
+			So(rows, ShouldResemble, []SheetRow{
+				{NewSheetCell("ace"), NewSheetCell("ace")},
+				{NewSheetCell("ace"), NewSheetCell("ace")},
+			})
+		})
+	})
+}
+
+func TestScan(t *testing.T) {
+	Convey("Test scan", t, func() {
+		type A struct {
+			Name string
+			Age  int
+		}
+		content := &SheetContent{
+			ValueRange: valueRange{
+				Values: [][]interface{}{
+					{"ace", 2},
+					{"bob", 3},
+				},
+			},
+		}
+		res := []*A{}
+		rows, err := content.ToRows()
+		So(err, ShouldBeNil)
+		err = content.scan(rows, &res)
+		So(err, ShouldBeNil)
+		So(len(res), ShouldEqual, 2)
+		So(res, ShouldResemble, []*A{
+			{Name: "ace", Age: 2},
+			{Name: "bob", Age: 3},
+		})
+		dev.PJSON(res)
+	})
+
+}
 
 func TestWriteAndReadData(t *testing.T) {
 	sheet := getSheetClient().AddSheet("test write and read", 0)
@@ -22,14 +118,16 @@ func TestWriteAndReadData(t *testing.T) {
 		},
 	})
 	assert.NoError(t, sheet.Err)
-	rows, err := sheet.ReadRows()
+	_, err := sheet.ReadRows()
 	assert.NoError(t, err)
-	rows = sheet.TrimBlankTail(rows)
-	for _, row := range rows {
-		for _, cell := range row {
-			t.Log(cell.Value())
+	/*
+		rows = rows.To TrimBlankTail()
+		for _, row := range rows {
+			for _, cell := range row {
+				t.Log(cell.Value())
+			}
 		}
-	}
+	*/
 }
 
 func TestSheet_moveRowOrColumn(t *testing.T) {

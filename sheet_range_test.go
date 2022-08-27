@@ -3,7 +3,6 @@ package docs
 import (
 	"testing"
 
-	"github.com/hilaily/kit/dev"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,22 +13,6 @@ func TestSetDropdown(t *testing.T) {
 	assert.NoError(t, err)
 	ss := sheet.ssClient.DeleteSheet(sheet.GetID())
 	assert.NoError(t, ss.Err)
-}
-
-func TestScan(t *testing.T) {
-	type A struct {
-		Name string
-		Age  int
-	}
-	rows := []SheetRow{
-		[]*SheetCell{NewSheetCell("ace"), NewSheetCell(2)},
-		[]*SheetCell{NewSheetCell("bob"), NewSheetCell(3)},
-	}
-	r := &SheetRange{}
-	res := []*A{}
-	err := r.scan(rows, &res)
-	assert.NoError(t, err)
-	dev.PJSON(res)
 }
 
 /*

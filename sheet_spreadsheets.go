@@ -162,7 +162,7 @@ func (ss *SpreadSheets) SheetID(sheetID string) *Sheet {
 	return newSheet(sheetID, ss)
 }
 
-// SheetIndex get a sheet instance by index. Index start from 1
+// SheetIndex get a sheet instance by index. Index start from 0
 func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
 	meta, err := ss.GetMeta()
 	s := &Sheet{}
@@ -175,7 +175,7 @@ func (ss *SpreadSheets) SheetIndex(index int) *Sheet {
 			return ss.SheetID(v.SheetID)
 		}
 	}
-	s.Err = newErr("sheet index not exist, index: %d", index)
+	s.Err = newErr("sheet index not exist(index start from 0), index: %d", index)
 	return s
 }
 
@@ -223,28 +223,6 @@ func (ss *SpreadSheets) CopySheet(sourceSheetID string, title string) (sheet *Sh
 	}
 	id := res.Replies[0].CopySheet.Properties.SheetID
 	return newSheet(id, ss)
-}
-
-type SheetContent struct {
-	ValueRange struct {
-		Values [][]interface{} `json:"values"`
-	} `json:"valueRange"`
-}
-
-func (sc *SheetContent) ToRows() []SheetRow {
-	sheetRows := make([]SheetRow, 0)
-	if sc == nil {
-		return sheetRows
-	}
-	for _, rows := range sc.ValueRange.Values {
-		cells := make([]*SheetCell, 0)
-		for _, row := range rows {
-			r := row
-			cells = append(cells, NewSheetCell(r))
-		}
-		sheetRows = append(sheetRows, cells)
-	}
-	return sheetRows
 }
 
 type (
@@ -296,8 +274,8 @@ type (
 	sheetMetaMerge struct {
 		ColumnCount      int `json:"columnCount"`
 		RowCount         int `json:"rowCount"`
-		StartColumnIndex int `json:"startColumnIndex"`
-		StartRowIndex    int `json:"startRowIndex"`
+		StartColumnIndex int `json:"startColumnIndex"` // start from 0
+		StartRowIndex    int `json:"startRowIndex"`    // start from 0
 	}
 
 	sheetMetaProtect struct {

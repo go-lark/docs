@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
+	"strconv"
 )
 
 /*
@@ -119,8 +121,9 @@ func (s *Sheet) GetContentByRangeV2(startCellname, endCellname string, render Sh
 	}
 
 	_req, _ := http.NewRequest(http.MethodGet, u, nil)
-	var content *SheetContent
+	content := &SheetContent{}
 	_, err := s.ssClient.baseClient.CommonReq(_req, &content)
+	content.sheet = s
 	return content, err
 }
 
@@ -134,25 +137,7 @@ func (s *Sheet) ReadRows() ([]SheetRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	return content.ToRows(), nil
-}
-
-func (s *Sheet) TrimBlankTail(rows []SheetRow) []SheetRow {
-	w := len(rows) - 1
-	if w == 0 {
-		return rows
-	}
-	for {
-		for _, v := range rows[w] {
-			if v.val != nil {
-				return rows[:w+1]
-			}
-		}
-		w--
-		if w == 0 {
-			return rows[:w]
-		}
-	}
+	return content.ToRows()
 }
 
 // WriteRows write rows line by line, start from A1 cell
@@ -365,4 +350,166 @@ type mergeInfo struct {
 	endCol   int
 	startRow int
 	endRow   int
+}
+
+type (
+	SheetContent struct {
+		sheet      *Sheet
+		ValueRange valueRange `json:"valueRange"`
+		Err        error
+	}
+	valueRange struct {
+		Values [][]interface{} `json:"values"`
+	}
+)
+
+func (sc *SheetContent) ToRows() ([]SheetRow, error) {
+	if sc.Err != nil {
+		return nil, sc.Err
+	}
+	sheetRows := make([]SheetRow, 0)
+	if sc == nil {
+		return sheetRows, nil
+	}
+	for _, rows := range sc.ValueRange.Values {
+		cells := make([]*SheetCell, 0)
+		for _, row := range rows {
+			r := row
+			cells = append(cells, NewSheetCell(r))
+		}
+		sheetRows = append(sheetRows, cells)
+	}
+	return sheetRows, nil
+}
+
+func (sc *SheetContent) ToRowsTrimBlankTail() ([]SheetRow, error) {
+	rows, err := sc.ToRows()
+	if err != nil {
+		return nil, err
+	}
+	w := len(rows) - 1
+	if w == 0 {
+		return rows, nil
+	}
+	for {
+		for _, v := range rows[w] {
+			if v.val != nil {
+				return rows[:w+1], nil
+			}
+		}
+		w--
+		if w == 0 {
+			return rows[:w+1], nil
+		}
+	}
+}
+
+// RowsParseMerge
+// parse cell from merged cell.
+// if a cell is merged, like below, we only get value at the first cell, others are nil.
+// then we fill a to every cell of the merged cell.
+// | a |   |   |
+// |   |   |   |
+// |   |   |   |
+func (sc *SheetContent) ToRowsParseMerged() ([]SheetRow, error) {
+	meta, err := sc.sheet.getMeta()
+	if err != nil {
+		return nil, err
+	}
+	cells, err := sc.ToRows()
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range meta.Merges {
+		startCol := v.StartColumnIndex
+		endCol := v.StartColumnIndex + v.ColumnCount - 1
+		startRow := v.StartRowIndex
+		endRow := v.StartRowIndex + v.RowCount - 1
+		for i := startRow; i <= endRow; i++ {
+			for j := startCol; j <= endCol; j++ {
+				cells[i][j] = cells[startRow][startCol]
+			}
+		}
+	}
+	return cells, nil
+}
+
+func (sc *SheetContent) Scan(ptr interface{}) error {
+	rows, err := sc.ToRowsParseMerged()
+	if err != nil {
+		return err
+	}
+	return sc.scan(rows, ptr)
+}
+
+func (sc *SheetContent) scan(rows []SheetRow, ptr interface{}) error {
+	// check it args is a pointer
+	rv := reflect.ValueOf(ptr)
+	if rv.Kind() != reflect.Ptr {
+		return fmt.Errorf("ptr is must a slice pointer")
+	}
+	if rv.CanSet() {
+		return fmt.Errorf("can not get slice address")
+	}
+	// dereference the pointer to get the slice
+	rv = rv.Elem()
+	if rv.Kind() != reflect.Slice {
+		return fmt.Errorf("ptr element is must a slice")
+	}
+	// slice element
+	elemt := rv.Type().Elem()
+	if elemt.Kind() != reflect.Ptr {
+		return fmt.Errorf("slice element must be a struct pointer, it is not pointer")
+	}
+	elemt = elemt.Elem()
+	if elemt.Kind() != reflect.Struct {
+		return fmt.Errorf("slice element must be a struct pointer, it it not struct")
+	}
+
+	fieldPosition := map[int]int{}
+	for i := 0; i < elemt.NumField(); i++ {
+		str := elemt.Field(i).Tag.Get("docs")
+		if str != "" {
+			v, err := strconv.ParseInt(str, 10, 64)
+			if err != nil {
+				return fmt.Errorf("struct tag wrong, it is not a number,  field index, %d, tag: %s", i, str)
+			}
+			fieldPosition[i] = int(v)
+		} else {
+			fieldPosition[i] = i
+		}
+	}
+	for _, row := range rows {
+		// new a slice element
+		valP := reflect.New(elemt)
+		// dereference pointer
+		val := valP.Elem()
+		for j := 0; j < val.NumField(); j++ {
+			name := elemt.Field(j).Name
+			position := fieldPosition[j]
+			f := val.Field(j)
+			if !f.CanAddr() {
+				fmt.Printf(": can not set, %s\n", name)
+			}
+			switch f.Kind() {
+			case reflect.Int64, reflect.Int:
+				to, err := row[position].ToInt64()
+				if err != nil {
+					return fmt.Errorf("scan faild, index: %d, %w", j, err)
+				}
+				f.SetInt(to)
+			case reflect.Float64, reflect.Float32:
+				to, err := row[position].ToFloat()
+				if err != nil {
+					return fmt.Errorf("scan faild, index: %d, %w", j, err)
+				}
+				f.SetFloat(to)
+			default:
+				f.SetString(row[position].ToString())
+			}
+
+		}
+		rv.Set(reflect.Append(rv, valP))
+	}
+	return nil
 }
