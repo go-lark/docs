@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/agiledragon/gomonkey/v2"
-	"github.com/hilaily/kit/dev"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,7 +12,6 @@ var (
 	sheet *Sheet
 )
 
-<<<<<<< HEAD
 /*
 func TestReadContent(t *testing.T) {
 	Convey("TestReadContent", t, func() {
@@ -78,37 +76,6 @@ func TestSheetContent(t *testing.T) {
 	})
 }
 
-func TestScan(t *testing.T) {
-	Convey("Test scan", t, func() {
-		type A struct {
-			Name string
-			Age  int
-		}
-		content := &SheetContent{
-			ValueRange: valueRange{
-				Values: [][]interface{}{
-					{"ace", 2},
-					{"bob", 3},
-				},
-			},
-		}
-		res := []*A{}
-		rows, err := content.ToRows()
-		So(err, ShouldBeNil)
-		err = content.scan(rows, &res)
-		So(err, ShouldBeNil)
-		So(len(res), ShouldEqual, 2)
-		So(res, ShouldResemble, []*A{
-			{Name: "ace", Age: 2},
-			{Name: "bob", Age: 3},
-		})
-		dev.PJSON(res)
-	})
-
-}
-
-=======
->>>>>>> 7dcedc0582909c2b0ea389bd202aa18e4f135ce9
 func TestWriteAndReadData(t *testing.T) {
 	sheet := getSheetClient().AddSheet("test write and read", 0)
 	assert.NoError(t, sheet.Err)
@@ -121,7 +88,6 @@ func TestWriteAndReadData(t *testing.T) {
 		},
 	})
 	assert.NoError(t, sheet.Err)
-<<<<<<< HEAD
 	_, err := sheet.ReadRows()
 	assert.NoError(t, err)
 	/*
@@ -132,7 +98,6 @@ func TestWriteAndReadData(t *testing.T) {
 			}
 		}
 	*/
-=======
 	rows, err := sheet.ReadRows()
 	assert.NoError(t, err)
 	rows = sheet.TrimBlankTail(rows)
@@ -141,7 +106,6 @@ func TestWriteAndReadData(t *testing.T) {
 			t.Log(cell.Value())
 		}
 	}
->>>>>>> 7dcedc0582909c2b0ea389bd202aa18e4f135ce9
 }
 
 func TestSheet_moveRowOrColumn(t *testing.T) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hilaily/kit/stringx"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,14 +33,17 @@ func TestPermission_Add(t *testing.T) {
 }
 
 func TestPermission_TransferOwner(t *testing.T) {
-	folderToken, err := getRootFolder()
-	assert.NoError(t, err)
-	r, err := getClientNew().file().Create(folderToken, "test create file", FileTypeDoc)
-	assert.NoError(t, err)
-	_, res, err := getPermission().TransferOwner(r.Token, FileTypeDoc, NewMemberWithEmail(testUserEmail), false, true)
-	assert.NoError(t, err)
-	assert.True(t, res.IsSuccess)
-	t.Log(res)
+	Convey("TestPermission_TransferOwner", t, func() {
+		folderToken, err := getRootFolder()
+		So(err, ShouldBeNil)
+		r, err := getClientNew().file().Create(folderToken, "test create file", FileTypeDoc)
+		So(err, ShouldBeNil)
+		So(r.Token, ShouldNotBeEmpty)
+		_, res, err := getPermission().TransferOwner(r.Token, FileTypeDoc, NewMemberWithEmail(testUserEmail), false, true)
+		So(err, ShouldBeNil)
+		So(res.IsSuccess, ShouldBeTrue)
+		t.Log(res)
+	})
 }
 
 func getPermission() *permission {

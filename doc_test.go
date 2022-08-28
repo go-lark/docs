@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-lark/docs/doctypes"
 	"github.com/hilaily/kit/pp"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,19 +51,22 @@ func TestDocDeleteFlag(t *testing.T) {
 }
 
 func TestDoc_Create(t *testing.T) {
-	b, c, _, err := docClient().GetContent()
-	assert.NoError(t, err)
-	resp := string(b)
-	assert.NotEmpty(t, resp)
-	title := c.Title
-	title.Elements[0].TextRun.Text = "import test " + time.Now().String()
-	doc := getClientNew().OpenFolder(testFolderToken).CreateDoc(title, c.Body)
-	assert.Nil(t, doc.Err)
-	assert.NotEmpty(t, doc.GetToken())
-	//assert.NotEmpty(t, doc.GetURL())
-	t.Log("token: ", doc.GetToken())
-	doc.ChangeOwner(NewMemberWithEmail(testUserEmail), false, true)
-	assert.Nil(t, doc.Err)
+
+	Convey("TestDoc_Create", t, func() {
+		b, c, _, err := docClient().GetContent()
+		assert.NoError(t, err)
+		resp := string(b)
+		So(resp, ShouldNotBeEmpty)
+		title := c.Title
+		title.Elements[0].TextRun.Text = "import test " + time.Now().String()
+		doc := getClientNew().OpenFolder(testFolderToken).CreateDoc(title, c.Body)
+		So(doc.Err, ShouldBeNil)
+		So(doc.GetToken(), ShouldNotBeEmpty)
+		//assert.NotEmpty(t, doc.GetURL())
+		t.Log("token: ", doc.GetToken())
+		doc.ChangeOwner(NewMemberWithEmail(testUserEmail), false, true)
+		So(doc.Err, ShouldBeNil)
+	})
 }
 
 func TestDoc_AddWholeComment(t *testing.T) {
