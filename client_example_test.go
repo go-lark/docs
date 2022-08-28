@@ -13,7 +13,7 @@ func Example_newClient() {
 func Example_createSheet() {
 	spreadSheets := NewClient("", "").RootFolder().CreateSpreadSheet("sheet title")
 	spreadSheets.Share(PermEdit, false, NewMemberWithEmail("aa.com"))
-	err := spreadSheets.SheetIndex(0).WriteRows(
+	err := spreadSheets.SheetIndex(1).WriteRows(
 		[][]interface{}{
 			{"name", "age"},
 			{"Ace", 10},

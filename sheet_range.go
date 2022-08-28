@@ -3,7 +3,10 @@ package docs
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"reflect"
+	"strconv"
 )
 
 // Range reference https://open.feishu.cn/document/ukTMukTMukTM/uczNzUjL3czM14yN3MTN#bae19f77
@@ -108,6 +111,78 @@ func (s *SheetRange) Content() *SheetContent {
 	}
 
 	return content
+}
+
+func (s *SheetRange) scan(rows []SheetRow, ptr interface{}) error {
+	// check it args is a pointer
+	rv := reflect.ValueOf(ptr)
+	if rv.Kind() != reflect.Ptr {
+		return fmt.Errorf("ptr is must a slice pointer")
+	}
+	if rv.CanSet() {
+		return fmt.Errorf("can not get slice address")
+	}
+	// dereference the pointer to get the slice
+	rv = rv.Elem()
+	if rv.Kind() != reflect.Slice {
+		return fmt.Errorf("ptr element is must a slice")
+	}
+	// slice element
+	elemt := rv.Type().Elem()
+	if elemt.Kind() != reflect.Ptr {
+		return fmt.Errorf("slice element must be a struct pointer, it is not pointer")
+	}
+	elemt = elemt.Elem()
+	if elemt.Kind() != reflect.Struct {
+		return fmt.Errorf("slice element must be a struct pointer, it it not struct")
+	}
+
+	fieldPosition := map[int]int{}
+	for i := 0; i < elemt.NumField(); i++ {
+		str := elemt.Field(i).Tag.Get("docs")
+		if str != "" {
+			v, err := strconv.ParseInt(str, 10, 64)
+			if err != nil {
+				return fmt.Errorf("struct tag wrong, it is not a number,  field index, %d, tag: %s", i, str)
+			}
+			fieldPosition[i] = int(v)
+		} else {
+			fieldPosition[i] = i
+		}
+	}
+	for _, row := range rows {
+		// new a slice element
+		valP := reflect.New(elemt)
+		// dereference pointer
+		val := valP.Elem()
+		for j := 0; j < val.NumField(); j++ {
+			name := elemt.Field(j).Name
+			position := fieldPosition[j]
+			f := val.Field(j)
+			if !f.CanAddr() {
+				fmt.Printf(": can not set, %s\n", name)
+			}
+			switch f.Kind() {
+			case reflect.Int64, reflect.Int:
+				to, err := row[position].ToInt64()
+				if err != nil {
+					return fmt.Errorf("scan faild, index: %d, %w", j, err)
+				}
+				f.SetInt(to)
+			case reflect.Float64, reflect.Float32:
+				to, err := row[position].ToFloat()
+				if err != nil {
+					return fmt.Errorf("scan faild, index: %d, %w", j, err)
+				}
+				f.SetFloat(to)
+			default:
+				f.SetString(row[position].ToString())
+			}
+
+		}
+		rv.Set(reflect.Append(rv, valP))
+	}
+	return nil
 }
 
 func (s *SheetRange) genRangeStr() string {

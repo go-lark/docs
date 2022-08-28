@@ -15,6 +15,23 @@ func TestSetDropdown(t *testing.T) {
 	assert.NoError(t, ss.Err)
 }
 
+func TestScan(t *testing.T) {
+	type A struct {
+		Name string
+		Age  int
+	}
+	rows := []SheetRow{
+		[]*SheetCell{NewSheetCell("ace"), NewSheetCell(2)},
+		[]*SheetCell{NewSheetCell("bob"), NewSheetCell(3)},
+	}
+	r := &SheetRange{}
+	res := []*A{}
+	err := r.scan(rows, &res)
+	assert.NoError(t, err)
+	ss := sheet.ssClient.DeleteSheet(sheet.GetID())
+	assert.NoError(t, ss.Err)
+}
+
 /*
 func TestGetRows(t *testing.T) {
 	c := getSheetClient().SheetID("2BGf04")

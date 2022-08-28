@@ -13,6 +13,7 @@ var (
 	sheet *Sheet
 )
 
+<<<<<<< HEAD
 /*
 func TestReadContent(t *testing.T) {
 	Convey("TestReadContent", t, func() {
@@ -106,6 +107,8 @@ func TestScan(t *testing.T) {
 
 }
 
+=======
+>>>>>>> 7dcedc0582909c2b0ea389bd202aa18e4f135ce9
 func TestWriteAndReadData(t *testing.T) {
 	sheet := getSheetClient().AddSheet("test write and read", 0)
 	assert.NoError(t, sheet.Err)
@@ -118,6 +121,7 @@ func TestWriteAndReadData(t *testing.T) {
 		},
 	})
 	assert.NoError(t, sheet.Err)
+<<<<<<< HEAD
 	_, err := sheet.ReadRows()
 	assert.NoError(t, err)
 	/*
@@ -128,6 +132,16 @@ func TestWriteAndReadData(t *testing.T) {
 			}
 		}
 	*/
+=======
+	rows, err := sheet.ReadRows()
+	assert.NoError(t, err)
+	rows = sheet.TrimBlankTail(rows)
+	for _, row := range rows {
+		for _, cell := range row {
+			t.Log(cell.Value())
+		}
+	}
+>>>>>>> 7dcedc0582909c2b0ea389bd202aa18e4f135ce9
 }
 
 func TestSheet_moveRowOrColumn(t *testing.T) {

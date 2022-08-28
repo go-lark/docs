@@ -140,6 +140,24 @@ func (s *Sheet) ReadRows() ([]SheetRow, error) {
 	return content.ToRows()
 }
 
+func (s *Sheet) TrimBlankTail(rows []SheetRow) []SheetRow {
+	w := len(rows) - 1
+	if w == 0 {
+		return rows
+	}
+	for {
+		for _, v := range rows[w] {
+			if v.val != nil {
+				return rows[:w+1]
+			}
+		}
+		w--
+		if w == 0 {
+			return rows[:w]
+		}
+	}
+}
+
 // WriteRows write rows line by line, start from A1 cell
 func (s *Sheet) WriteRows(data [][]interface{}, batchCount ...int) *Sheet {
 	return s.WriteRowsByStartCell("A1", nil, data, batchCount...)
