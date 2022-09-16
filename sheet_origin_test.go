@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/hilaily/kit/stringx"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
