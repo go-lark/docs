@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hilaily/kit/dev"
 	"github.com/hilaily/kit/stringx"
 	"github.com/stretchr/testify/assert"
 )
@@ -70,6 +71,18 @@ func TestSpreadSheets_Content(t *testing.T) {
 	assert.Nil(t, err)
 	l, _ := res.ToRows()
 	assert.NotZero(t, l)
+}
+
+func TestSpreadSheets_Content2(t *testing.T) {
+	sheet := getClientNew().OpenSpreadSheets("shtcnwKe1X3LMSUBYSTvoirbKq5")
+	c := sheet.SheetIndex(0)
+	res, err := c.GetContentByRange("A1", "B2")
+	assert.NoError(t, err)
+	l, err := res.ToRows()
+	assert.NoError(t, err)
+	assert.NotZero(t, l)
+	dev.PJSON(res)
+	t.Log(l)
 }
 
 func TestSpreadSheets_V2(t *testing.T) {

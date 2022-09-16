@@ -6,19 +6,25 @@ import (
 
 	"github.com/hilaily/kit/stringx"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSpreadSheetOrigin_MetaInfo(t *testing.T) {
-	b, res, err := getOrigin().MetaInfo()
-	assert.NoError(t, err)
-	assert.Equal(t, res.SpreadsheetToken, testSpreadSheetToken)
-	t.Log(string(b))
+	Convey("TestSpreadSheetOrigin_MetaInfo", t, func() {
+		b, res, err := getOrigin().MetaInfo()
+		assert.NoError(t, err)
+		So(res, ShouldNotBeNil)
+		assert.NotEmpty(t, res.SpreadsheetToken)
+		assert.Equal(t, res.SpreadsheetToken, testSpreadSheetToken)
+		t.Log(string(b))
+	})
 }
 
 func TestSpreadSheetOrigin_Properties(t *testing.T) {
 	_, res, err := getOrigin().MetaInfo()
 	assert.NoError(t, err)
+	assert.NotNil(t, res)
 	title := res.Properties.Title
 	t.Log("old title: ", title)
 	newTitle := "new title " + stringx.GenRankStr(10)

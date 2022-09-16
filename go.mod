@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/agiledragon/gomonkey/v2 v2.8.0
 	github.com/hilaily/kit v0.5.4
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.0
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/stretchr/testify v1.7.0
 )

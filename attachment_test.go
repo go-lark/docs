@@ -6,20 +6,23 @@ import (
 	"testing"
 
 	"github.com/go-lark/docs/doctypes"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAttachment_UpdateAll(t *testing.T) {
-	f := &bytes.Buffer{}
-	f.WriteString("test update file")
-	res, err := getAttachment().UpdateAll(
-		doctypes.AttachmentFile,
-		testDocToken,
-		"testfile.txt",
-		f.Bytes(),
-	)
-	assert.NoError(t, err)
-	t.Log(res)
+	Convey("TestAttachment_UpdateAll", t, func() {
+		f := &bytes.Buffer{}
+		f.WriteString("test update file")
+		res, err := getAttachment().UpdateAll(
+			doctypes.AttachmentFile,
+			testDocToken,
+			"testfile.txt",
+			f.Bytes(),
+		)
+		assert.NoError(t, err)
+		t.Log(res)
+	})
 }
 
 func TestAttachment_UpdateResume(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 )
 
 /*
-	About sheet.
+About sheet.
 */
 const (
 	defautWriteRowCount = 5000
@@ -45,7 +45,7 @@ func (s *Sheet) GetContentByRange(startCellname, endCellname string) (*SheetCont
 }
 
 func (s *Sheet) getContentByRange(r string) (*SheetContent, error) {
-	url := fmt.Sprintf("%s/open-apis/sheet/v2/spreadsheets/%s/values/%s?valueRenderOption=ToString", s.ssClient.baseClient.domain, s.ssClient.token, r)
+	url := fmt.Sprintf("%s/open-apis/sheet/v2/spreadsheets/%s/values/%s", s.ssClient.baseClient.domain, s.ssClient.token, r)
 	_req, _ := http.NewRequest(http.MethodGet, url, nil)
 	var content *SheetContent
 	_, err := s.ssClient.baseClient.CommonReq(_req, &content)
@@ -165,13 +165,16 @@ func (s *Sheet) WriteRows(data [][]interface{}, batchCount ...int) *Sheet {
 
 // WriteRowsByStartCell
 // Parameter
-//  title: title of every columns.
-//  batchCount: max insert line coune once.
+//
+//	title: title of every columns.
+//	batchCount: max insert line coune once.
+//
 // Example
-//  s.WriteRowsByStartCell("A1",[]string{"name", "age"}, [][]interface{}{
-//  	{"Ace",15},
-//  	{"Bob",16},
-//  },10)
+//
+//	s.WriteRowsByStartCell("A1",[]string{"name", "age"}, [][]interface{}{
+//		{"Ace",15},
+//		{"Bob",16},
+//	},10)
 func (s *Sheet) WriteRowsByStartCell(startCell string, title []string, data [][]interface{}, batchCount ...int) *Sheet {
 	if s.Err != nil {
 		return s
@@ -258,7 +261,8 @@ func (s *Sheet) Hidden(hidden bool) *Sheet {
 
 // FrozenRow
 // Parameter
-//  row: number of row that want to frezen. 0 represent unfrozen
+//
+//	row: number of row that want to frezen. 0 represent unfrozen
 func (s *Sheet) FrozenRow(row int) *Sheet {
 	return s.updateBase(map[string]interface{}{
 		"frozenRowCount": row,
@@ -267,7 +271,8 @@ func (s *Sheet) FrozenRow(row int) *Sheet {
 
 // FrozenColumn
 // Parameter
-//  column: number of column that want to frezen. 0 represent unfrozen
+//
+//	column: number of column that want to frezen. 0 represent unfrozen
 func (s *Sheet) FrozenColumn(column int) *Sheet {
 	return s.updateBase(map[string]interface{}{
 		"frozenColCount": column,
