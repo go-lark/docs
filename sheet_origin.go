@@ -8,8 +8,8 @@ package docs
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/hilaily/kit/netx"
@@ -82,7 +82,7 @@ func (so *SpreadSheetOrigin) SheetBatchUpdate(args map[ModifySheetType]interface
 // Import represent import excel from local
 // reference https://open.larksuite.com/document/ukTMukTMukTM/uATO2YjLwkjN24CM5YjN
 func (so *SpreadSheetOrigin) Import(filepath string, filename string, folderToken string) ([]byte, string, error) {
-	data, err := ioutil.ReadFile(filepath)
+	data, err := os.ReadFile(filepath)
 	if err != nil {
 		return nil, "", err
 	}

@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/hilaily/kit/httpx"
 )
@@ -25,12 +24,14 @@ const (
 	fileUpdateResumePart    = "/open-apis/drive/v1/files/upload_part"
 	fileUpdateResumeFinish  = "/open-apis/drive/v1/files/upload_finish"
 
-	retryTimes = 3
+	//retryTimes = 3
 )
 
+/*
 func newFile(client *Client) *File {
 	return &File{baseClient: client}
 }
+*/
 
 type File struct {
 	baseClient *Client
@@ -70,7 +71,8 @@ func (f *File) Copy(srcFileToken string, srcFileType FileType, dstFolderToken, d
 
 // UpdateAll
 // Return
-//  1: token of the file
+//
+//	1: token of the file
 func (f *File) UpdateAll(parentType ParentType, parentNode, filename string, fileData []byte) (string, error) {
 	return f.updateAllBase(fileUpdateAllURL, parentType, parentNode, filename, fileData)
 }
@@ -188,6 +190,7 @@ func (f *File) resumePrepare(urlpath, filename string, fileSize int64, parentTyp
 	return dst, nil
 }
 
+/*
 func (f *File) resumePartReTry(urlpath, uploadID string, seq int, size int, partData []byte) (err error) {
 	duration := time.Second
 	for i := 1; i <= retryTimes; i++ {
@@ -199,6 +202,7 @@ func (f *File) resumePartReTry(urlpath, uploadID string, seq int, size int, part
 	}
 	return err
 }
+*/
 
 func (f *File) resumePart(urlpath, uploadID string, seq int, size int, partData []byte) (err error) {
 	checksum := adler32.Checksum(partData)

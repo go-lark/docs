@@ -368,12 +368,14 @@ func (s *Sheet) getRange() *SheetRange {
 // SheetRow represent for a group of sheet cell
 type SheetRow = []*SheetCell
 
+/*
 type mergeInfo struct {
 	startCol int
 	endCol   int
 	startRow int
 	endRow   int
 }
+*/
 
 type (
 	SheetContent struct {

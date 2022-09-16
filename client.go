@@ -6,7 +6,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -39,16 +39,16 @@ func NewClient(appID, appSecret string, ops ...ClientOption) *Client {
 
 // Client for docs sdk, support sheet, doc and so on
 type Client struct {
-	appID          string
-	appSecret      string
-	_token         string
-	refreshToken   string
+	appID     string
+	appSecret string
+	_token    string
+	//refreshToken   string
 	tokenExpire    int64
 	tenantAK       string
 	tenantAKExpire int64
 	domain         string
 	httpClient     *http.Client
-	useOldToken    bool
+	//useOldToken    bool
 
 	tokenGetter func() (token string, expireTime int64, err error)
 }
@@ -64,7 +64,7 @@ func (c *Client) CommonReq(_req *http.Request, dst interface{}) ([]byte, error) 
 			if err1 != nil {
 				log.Debugf("common req, get body, %s", err1.Error())
 			}
-			reqBody, err1 = ioutil.ReadAll(_body)
+			reqBody, err1 = io.ReadAll(_body)
 			if err1 != nil {
 				log.Debugf("common req,read body, %s", err1.Error())
 			}
@@ -111,9 +111,12 @@ func (c *Client) DoRequest(_req *http.Request, dst interface{}) ([]byte, error) 
 
 // SpreadSheets is for Sheets use
 // Parameter
-//  spreadSheetToken: token of a spreadsheets.
+//
+//	spreadSheetToken: token of a spreadsheets.
+//
 // Note
-//  in a spreadsheets url, for example: https://abc.feishu.cn/sheets/shtcnjvusYPizPzZ8JqIWyCP7ca, shtcnjvusYPizPzZ8JqIWyCP7ca is the token
+//
+//	in a spreadsheets url, for example: https://abc.feishu.cn/sheets/shtcnjvusYPizPzZ8JqIWyCP7ca, shtcnjvusYPizPzZ8JqIWyCP7ca is the token
 func (c *Client) OpenSpreadSheets(spreadSheetToken string) *SpreadSheets {
 	ss := &SpreadSheets{}
 	ss.baseClient = c
@@ -123,7 +126,8 @@ func (c *Client) OpenSpreadSheets(spreadSheetToken string) *SpreadSheets {
 
 // Doc for doc operation
 // Note
-//  in a doc url, for example: https://abc.feishu.cn/docs/doccnuqdJJqnJ0LLWOjxoTS2Rld, doccnuqdJJqnJ0LLWOjxoTS2Rld is the token
+//
+//	in a doc url, for example: https://abc.feishu.cn/docs/doccnuqdJJqnJ0LLWOjxoTS2Rld, doccnuqdJJqnJ0LLWOjxoTS2Rld is the token
 func (c *Client) OpenDoc(token string) *Doc {
 	d := &Doc{}
 	d.baseClient = c
@@ -133,7 +137,8 @@ func (c *Client) OpenDoc(token string) *Doc {
 
 // Folder for folder operation
 // Note
-//  in a folder url, for example: https://abc.feishu.cn/drive/folder/fldcnNhbqOyI0PVEPCuKa0acocdb, fldcnNhbqOyI0PVEPCuKa0acocdb is the token
+//
+//	in a folder url, for example: https://abc.feishu.cn/drive/folder/fldcnNhbqOyI0PVEPCuKa0acocdb, fldcnNhbqOyI0PVEPCuKa0acocdb is the token
 func (c *Client) OpenFolder(token string) *Folder {
 	f := &Folder{}
 	f.baseClient = c
@@ -160,11 +165,13 @@ func (c *Client) permission() *permission {
 	}
 }
 
+/*
 func (c *Client) attachment() *Attachment {
 	a := &Attachment{}
 	a.f = c.file()
 	return a
 }
+*/
 
 func (c *Client) getTokenFromTokenGetter() string {
 	if c._token != "" && c.tokenExpire > time.Now().Unix() {
