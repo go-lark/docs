@@ -1,12 +1,7 @@
 package docs
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"net/http"
-)
-
+// FIXME Laily https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/drive-v1/file-comment/create
+/*
 // AddWholeComment represent add a whole _comment
 func (c comment) AddWholeComment(fileType FileType, content string) (*RespComment, error) {
 	en, _ := json.Marshal(map[string]interface{}{
@@ -43,3 +38,4 @@ type RespComment struct {
 	CreateTimestamp int64  `json:"create_timestamp"`
 	UpdateTimestamp int64  `json:"update_timestamp"`
 }
+*/

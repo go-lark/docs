@@ -1,8 +1,10 @@
 package docs
 
+/*
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/go-lark/docs/doctypes"
@@ -20,35 +22,54 @@ func TestAttachment_UpdateAll(t *testing.T) {
 			"testfile.txt",
 			f.Bytes(),
 		)
+		So(err, ShouldBeNil)
+		So(res, ShouldNotBeEmpty)
 		assert.NoError(t, err)
 		t.Log(res)
 	})
 }
 
 func TestAttachment_UpdateResume(t *testing.T) {
-	fi, err := os.Stat(testBigFile)
-	assert.NoError(t, err)
-	f, err := os.Open(testBigFile)
-	assert.NoError(t, err)
-	ch := make(chan int64, 20)
-	go func() {
-		for v := range ch {
-			t.Log("process: ", v)
-		}
-	}()
+	Convey("TestAttachment_UpdateResume", t, func() {
+		path := os.TempDir()
+		name := filepath.Join(path, "test.txt")
+		t.Log(name)
+		testBigFile, err := os.Create(name)
+		So(err, ShouldBeNil)
+		testBigFile.Truncate(2 * 1e7)
+		fi, err := testBigFile.Stat()
+		assert.NoError(t, err)
+		testBigFile.Close()
 
-	resp, err := getAttachment().UpdateResuming(
-		doctypes.AttachmentFile,
-		testDocToken,
-		fi.Name(),
-		fi.Size(),
-		f,
-		ch,
-	)
+		f, err := os.Open(name)
+		assert.NoError(t, err)
+		ch := make(chan int64, 20)
+		go func() {
+			for v := range ch {
+				t.Log("process: ", v)
+			}
+		}()
+
+		resp, err := getAttachment().UpdateResuming(
+			doctypes.AttachmentFile,
+			testDocToken,
+			fi.Name(),
+			fi.Size(),
+			f,
+			ch,
+		)
+		assert.NoError(t, err)
+		t.Log(resp)
+	})
+}
+
+func TestDeleteFile(t *testing.T) {
+	res, err := getClientNew().file().delete("boxcnkaAlfia0qxcumSToGxLahe", FileTypeFile)
 	assert.NoError(t, err)
-	t.Log(resp)
+	t.Log(res)
 }
 
 func getAttachment() *Attachment {
 	return getClientNew().attachment()
 }
+*/

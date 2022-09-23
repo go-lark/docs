@@ -1,5 +1,6 @@
 package docs
 
+/*
 import (
 	"testing"
 

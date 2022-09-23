@@ -262,8 +262,23 @@ func (f *File) resumeFinish(urlpath string, uploadID string, blockSum int) (file
 	return
 }
 
+func (f *File) delete(token string, fileType FileType) (*deleteFileResp, error) {
+	u := "/open-apis/drive/v1/files/" + token + "?type=" + fileType
+	req, _ := http.NewRequest(http.MethodDelete, f.baseClient.urlJoin(u), nil)
+	resp := &deleteFileResp{}
+	_, err := f.baseClient.CommonReq(req, resp)
+	if err != nil {
+		return nil, fmt.Errorf("delete file fail, token: %s, file type: %s, %w", token, fileType, err)
+	}
+	return resp, nil
+}
+
 type resumePreparesResp struct {
 	UploadID  string `json:"upload_id"`
 	BlockSize int64  `json:"block_size"`
 	BlockNum  int    `json:"block_num"`
+}
+
+type deleteFileResp struct {
+	TaskID string `json:"task_id"`
 }

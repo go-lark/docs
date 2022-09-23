@@ -1,5 +1,6 @@
 package docs
 
+/*
 import (
 	"testing"
 
@@ -58,3 +59,4 @@ func getRootFolder() (string, error) {
 	}
 	return folder.GetToken(), nil
 }
+*/

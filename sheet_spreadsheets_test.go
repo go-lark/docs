@@ -1,5 +1,6 @@
 package docs
 
+/*
 import (
 	"fmt"
 	"testing"
@@ -220,3 +221,4 @@ type row struct {
 	Date  time.Time
 	Mark  string
 }
+*/

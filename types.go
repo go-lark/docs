@@ -10,6 +10,7 @@ var (
 	FileTypeBitable  FileType = "bitable"
 	FileTypeMindNote FileType = "mindnote"
 	FileTypeFolder   FileType = "folder"
+	FileTypeFile     FileType = "file"
 )
 
 type ParentType = string

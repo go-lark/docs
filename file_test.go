@@ -1,5 +1,6 @@
 package docs
 
+/*
 import (
 	"bytes"
 	"os"
@@ -81,3 +82,4 @@ func TestFileUpdateResume(t *testing.T) {
 func getFile() *File {
 	return getClientNew().file()
 }
+*/

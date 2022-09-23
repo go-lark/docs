@@ -22,7 +22,7 @@ type Doc struct {
 	Err error
 	tokenIns
 	baseClient *Client
-	_comment   *comment
+	//_comment   *comment
 }
 
 // GetMeta for doc meta info
@@ -47,9 +47,11 @@ func (d *Doc) GetContent() ([]byte, *DocContent, int, error) {
 	return r, content, resp.Revision, err
 }
 
+/*
 func (d *Doc) AddWholeComment(content string) (*RespComment, error) {
 	return d.getComment().AddWholeComment(FileTypeDoc, content)
 }
+*/
 
 // Share to other user or group.
 func (d *Doc) Share(perm Perm, notify bool, members ...*Member) *Doc {
@@ -140,9 +142,11 @@ type respGetContent struct {
 	Revision int    `json:"revision"`
 }
 
+/*
 func (d *Doc) getComment() *comment {
 	if d._comment == nil {
 		d._comment = newComment(d.token, d.baseClient)
 	}
 	return d._comment
 }
+*/

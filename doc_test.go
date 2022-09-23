@@ -6,11 +6,8 @@ import (
 	"io/ioutil"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/go-lark/docs/doctypes"
-	"github.com/hilaily/kit/pp"
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +24,7 @@ func TestGetContent(t *testing.T) {
 func TestGetMeta(t *testing.T) {
 	res, err := docClient().GetMeta()
 	assert.NoError(t, err)
-	assert.Equal(t, baseDomain+"/docs/doccnHA8wfHJtNsVBhH6MkRoh7m", res.URL)
+	assert.Equal(t, baseDomain+"/docs/"+testDocToken, res.URL)
 	assert.Equal(t, DocDeleteFlagNormal, res.DeleteFlag)
 }
 
@@ -50,6 +47,7 @@ func TestDocDeleteFlag(t *testing.T) {
 	assert.Equal(t, aa.B, res.B)
 }
 
+/*
 func TestDoc_Create(t *testing.T) {
 
 	Convey("TestDoc_Create", t, func() {
@@ -57,6 +55,7 @@ func TestDoc_Create(t *testing.T) {
 		assert.NoError(t, err)
 		resp := string(b)
 		So(resp, ShouldNotBeEmpty)
+		os.WriteFile("/tmp/test_create_doc.json", b, 0777)
 		title := c.Title
 		title.Elements[0].TextRun.Text = "import test " + time.Now().String()
 		doc := getClientNew().OpenFolder(testFolderToken).CreateDoc(title, c.Body)
@@ -68,11 +67,14 @@ func TestDoc_Create(t *testing.T) {
 		So(doc.Err, ShouldBeNil)
 	})
 }
+*/
 
+/*
 func TestDoc_AddWholeComment(t *testing.T) {
 	_, err := docClient().AddWholeComment("test comment")
 	assert.NoError(t, err)
 }
+*/
 
 func TestQueryEscape(t *testing.T) {
 	u := "https%3A%2F%2Fplayer.bilibili.com%2Fplayer.html%3Faid%3D25898700"
@@ -80,6 +82,7 @@ func TestQueryEscape(t *testing.T) {
 	t.Log(u2)
 }
 
+/*
 func TestDoc_CreateDoc(t *testing.T) {
 	var blocks []doctypes.IBlocks
 	for _, v := range [][]doctypes.IBlocks{
@@ -155,6 +158,7 @@ func genParagraph() []doctypes.IBlocks {
 	}
 	return res
 }
+*/
 
 func genHorizonLine() []doctypes.IBlocks {
 	return []doctypes.IBlocks{

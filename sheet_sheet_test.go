@@ -1,5 +1,6 @@
 package docs
 
+/*
 import (
 	"testing"
 
@@ -22,7 +23,6 @@ func TestReadContent(t *testing.T) {
 
 	})
 }
-*/
 
 func TestSheetContent(t *testing.T) {
 	Convey("TestSheetContent", t, func() {
@@ -90,14 +90,13 @@ func TestWriteAndReadData(t *testing.T) {
 	assert.NoError(t, sheet.Err)
 	_, err := sheet.ReadRows()
 	assert.NoError(t, err)
-	/*
-		rows = rows.To TrimBlankTail()
-		for _, row := range rows {
-			for _, cell := range row {
-				t.Log(cell.Value())
-			}
-		}
-	*/
+
+		//rows = rows.To TrimBlankTail()
+		//for _, row := range rows {
+		//	for _, cell := range row {
+		//		t.Log(cell.Value())
+		//	}
+		//}
 	rows, err := sheet.ReadRows()
 	assert.NoError(t, err)
 	rows = sheet.TrimBlankTail(rows)
@@ -162,3 +161,4 @@ func getSheet() *Sheet {
 	}
 	return sheet
 }
+*/

@@ -1,15 +1,20 @@
 package docs
 
+// NOT SUPPORT NOW
+
+/*
 import (
 	"io"
 
 	"github.com/go-lark/docs/doctypes"
 )
+*/
 
 /*
 	for update a file or image in a doc
 */
 
+/*
 const (
 	attachmentUpdateAllURL        = "/open-apis/drive/v1/medias/upload_all"
 	attachmentUpdateResumePrepare = "/open-apis/drive/v1/medias/upload_prepare"
@@ -17,13 +22,11 @@ const (
 	attachmentUpdateResumeFinish  = "/open-apis/drive/v1/medias/upload_finish"
 )
 
-/*
 func newAttachment(client *Client) *Attachment {
 	return &Attachment{
 		f: newFile(client),
 	}
 }
-*/
 
 type Attachment struct {
 	f *File
@@ -40,3 +43,8 @@ func (a *Attachment) UpdateResuming(attachmentType doctypes.AttachmentType, toke
 		fileSize, fileData, processChan,
 	)
 }
+
+func (a *Attachment) Delete(){
+
+}
+*/

@@ -26,7 +26,8 @@ type Folder struct {
 
 // CreateSubFolder to create a child folder in the current folder
 // Return
-//  1: the child folder instance
+//
+//	1: the child folder instance
 func (f *Folder) CreateSubFolder(title string) *Folder {
 	if f.Err != nil {
 		return f
@@ -73,6 +74,7 @@ func (f *Folder) Children(fileTypes []FileType) (*ChildrenInfo, error) {
 	return res, err
 }
 
+// FIXME: Laily
 // CreateDoc for create a document
 func (f *Folder) CreateDoc(title *doctypes.Title, body *doctypes.Body) (doc *Doc) {
 	doc = &Doc{}
