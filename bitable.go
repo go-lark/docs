@@ -37,7 +37,7 @@ type Table struct {
 	*Bitable
 }
 
-func (t *Table) AddRecord(data []*Field) *Table {
+func (t *Table) AddRecord(data []Field) *Table {
 	_url := t.baseClient.urlJoin(fmt.Sprintf("/open-apis/bitable/v1/apps/%s/tables/%s/records/batch_create", t.token, t.id))
 	r := []*Record{}
 	for _, v := range data {
@@ -59,7 +59,7 @@ func (t *Table) AddRecord(data []*Field) *Table {
 type Field = map[string]interface{}
 
 type Record struct {
-	Fields   *Field `json:"fields"`
+	Fields   Field  `json:"fields"`
 	ID       string `json:"id,omitempty"`
 	RecordID string `json:"record_id,omitempty"`
 }
