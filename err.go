@@ -1,6 +1,7 @@
 package docs
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -19,10 +20,22 @@ func newErr(format string, params ...interface{}) *Err {
 }
 
 type Err struct {
-	Code int
-	Msg  string
+	Meta Meta   `json:"meta"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 func (e *Err) Error() string {
-	return fmt.Sprintf("code: %d, msg: %s", e.Code, e.Msg)
+	en, err := json.Marshal(e)
+	if err == nil {
+		return string(en)
+	}
+	return fmt.Sprintf("code: %d, msg: %s, meta:%#+v", e.Code, e.Msg, e.Meta)
+}
+
+type Meta struct {
+	RequestID string `json:"request_id"`
+	TTLogID   string `json:"tt_log_id"`
+	TraceHost string `json:"trace_host"`
+	TraceTag  string `json:"trace_tag"`
 }

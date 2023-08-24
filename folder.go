@@ -26,7 +26,8 @@ type Folder struct {
 
 // CreateSubFolder to create a child folder in the current folder
 // Return
-//  1: the child folder instance
+//
+//	1: the child folder instance
 func (f *Folder) CreateSubFolder(title string) *Folder {
 	if f.Err != nil {
 		return f

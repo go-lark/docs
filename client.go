@@ -94,13 +94,19 @@ func (c *Client) DoRequest(_req *http.Request, dst interface{}) ([]byte, error) 
 		return nil, fmt.Errorf("common req, url: %s, %w", reqURL, err)
 	}
 	defer res.Body.Close()
+	m := &Meta{
+		RequestID: res.Header.Get("X-Request-Id"),
+		TTLogID:   res.Header.Get("X-Tt-Logid"),
+		TraceHost: res.Header.Get("X-Tt-Trace-Host"),
+		TraceTag:  res.Header.Get("X-Tt-Trace-Tag"),
+	}
 	body := &respBody{}
 	_, err = httpx.HandleResp(res, body)
 	if err != nil {
-		return nil, fmt.Errorf("common req, hanle resp, url: %s, %w", reqURL, err)
+		return nil, &Err{Meta: *m, Code: body.Code, Msg: fmt.Sprintf("common req, hanle resp, url: %s, %v", reqURL, err)}
 	}
 	if body.Code != 0 {
-		return nil, &Err{Code: body.Code, Msg: body.Msg}
+		return nil, &Err{Meta: *m, Code: body.Code, Msg: body.Msg}
 	}
 	err = json.Unmarshal(body.Data, &dst)
 	if err != nil {
@@ -111,9 +117,12 @@ func (c *Client) DoRequest(_req *http.Request, dst interface{}) ([]byte, error) 
 
 // SpreadSheets is for Sheets use
 // Parameter
-//  spreadSheetToken: token of a spreadsheets.
+//
+//	spreadSheetToken: token of a spreadsheets.
+//
 // Note
-//  in a spreadsheets url, for example: https://abc.feishu.cn/sheets/shtcnjvusYPizPzZ8JqIWyCP7ca, shtcnjvusYPizPzZ8JqIWyCP7ca is the token
+//
+//	in a spreadsheets url, for example: https://abc.feishu.cn/sheets/shtcnjvusYPizPzZ8JqIWyCP7ca, shtcnjvusYPizPzZ8JqIWyCP7ca is the token
 func (c *Client) OpenSpreadSheets(spreadSheetToken string) *SpreadSheets {
 	ss := &SpreadSheets{}
 	ss.baseClient = c
@@ -123,7 +132,8 @@ func (c *Client) OpenSpreadSheets(spreadSheetToken string) *SpreadSheets {
 
 // Doc for doc operation
 // Note
-//  in a doc url, for example: https://abc.feishu.cn/docs/doccnuqdJJqnJ0LLWOjxoTS2Rld, doccnuqdJJqnJ0LLWOjxoTS2Rld is the token
+//
+//	in a doc url, for example: https://abc.feishu.cn/docs/doccnuqdJJqnJ0LLWOjxoTS2Rld, doccnuqdJJqnJ0LLWOjxoTS2Rld is the token
 func (c *Client) OpenDoc(token string) *Doc {
 	d := &Doc{}
 	d.baseClient = c
@@ -133,12 +143,20 @@ func (c *Client) OpenDoc(token string) *Doc {
 
 // Folder for folder operation
 // Note
-//  in a folder url, for example: https://abc.feishu.cn/drive/folder/fldcnNhbqOyI0PVEPCuKa0acocdb, fldcnNhbqOyI0PVEPCuKa0acocdb is the token
+//
+//	in a folder url, for example: https://abc.feishu.cn/drive/folder/fldcnNhbqOyI0PVEPCuKa0acocdb, fldcnNhbqOyI0PVEPCuKa0acocdb is the token
 func (c *Client) OpenFolder(token string) *Folder {
 	f := &Folder{}
 	f.baseClient = c
 	f.token = token
 	return f
+}
+
+func (c *Client) OpenBitable(token string) *Bitable {
+	b := &Bitable{}
+	b.token = token
+	b.baseClient = c
+	return b
 }
 
 // RootFolder get root folder of the bot/user
@@ -220,6 +238,10 @@ func SetLogLevel(level logrus.Level) {
 }
 
 func (c *Client) getTenantAccessToken() (string, error) {
+	if c.appID == "" || c.appSecret == "" {
+		return "", fmt.Errorf("app id or app secret is empty")
+	}
+
 	now := time.Now()
 	liveSec := c.tenantAKExpire - now.Unix()
 	if c.tenantAK != "" && liveSec > canUseTenantToken {

@@ -58,7 +58,7 @@ func NewBlockSheet(token string, rowSize, colSize int) *BlockSheet {
 // NewBlockBitable for new bitable block
 // @param: token represent a bitable docs token
 // NOTE:
-//if token is empty create a new bitable block, if token is not empty create a bitable copy from the existed bitable.
+// if token is empty create a new bitable block, if token is not empty create a bitable copy from the existed bitable.
 func NewBlockBitable(token string, viewType BitableViewType) *BlockBitable {
 	return &BlockBitable{
 		Token:    token,

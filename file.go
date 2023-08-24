@@ -70,7 +70,8 @@ func (f *File) Copy(srcFileToken string, srcFileType FileType, dstFolderToken, d
 
 // UpdateAll
 // Return
-//  1: token of the file
+//
+//	1: token of the file
 func (f *File) UpdateAll(parentType ParentType, parentNode, filename string, fileData []byte) (string, error) {
 	return f.updateAllBase(fileUpdateAllURL, parentType, parentNode, filename, fileData)
 }
