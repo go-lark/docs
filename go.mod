@@ -3,7 +3,7 @@ module github.com/go-lark/docs
 go 1.16
 
 require (
-	github.com/hilaily/kit v0.5.4
+	github.com/hilaily/kit v0.7.11
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0

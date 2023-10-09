@@ -141,6 +141,17 @@ func (c *Client) OpenDoc(token string) *Doc {
 	return d
 }
 
+// Docx for doc operation
+// Note
+//
+//	in a docx url, for example: https://abc.feishu.cn/docs/doccnuqdJJqnJ0LLWOjxoTS2Rld, doccnuqdJJqnJ0LLWOjxoTS2Rld is the token
+func (c *Client) OpenDocx(token string) *Docx {
+	d := &Docx{}
+	d.baseClient = c
+	d.token = token
+	return d
+}
+
 // Folder for folder operation
 // Note
 //

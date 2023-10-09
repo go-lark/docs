@@ -9,7 +9,7 @@ import (
 
 func TestAddRecord(t *testing.T) {
 	c := bitableClient()
-	err := c.Table("tblzYfTu6y2UVUIR").AddRecord([]*Field{
+	err := c.Table("tblzYfTu6y2UVUIR").AddRecord([]Field{
 		{
 			"多行文本": "多行文本",
 			"单选":   "单选",

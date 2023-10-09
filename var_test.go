@@ -14,6 +14,7 @@ var (
 	testDocToken         = ""
 	testFolderToken      = ""
 	testBitableToken     = ""
+	testDocxToken        = ""
 
 	testBigFile   = ""
 	testUserEmail = ""
@@ -35,6 +36,7 @@ func init() {
 	testDocToken = os.Getenv("DOCS_DOC_TOKEN")
 	testFolderToken = os.Getenv("DOCS_FOLDER_TOKEN")
 	testBitableToken = os.Getenv("DOCS_BITABLE_TOKEN")
+	testDocxToken = os.Getenv("DOCS_DOCX_TOKEN")
 
 	testBigFile = os.Getenv("DOCS_BIG_FILE")
 	testUserEmail = os.Getenv("DOCS_USEREMAIL")
