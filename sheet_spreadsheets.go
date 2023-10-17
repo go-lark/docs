@@ -44,7 +44,8 @@ func (ss *SpreadSheets) GetMeta() (res *SpreadSheetMeta, err error) {
 
 // UpdateTitle
 // Parameter
-//  title: tile of spreadsheet
+//
+//	title: tile of spreadsheet
 func (ss *SpreadSheets) UpdateTitle(title string) *SpreadSheets {
 	if ss.Err != nil {
 		return ss
@@ -58,7 +59,9 @@ func (ss *SpreadSheets) UpdateTitle(title string) *SpreadSheets {
 
 // DeleteSheet
 // Note:
-//  Sheet id can be found in url, for example in the url https://laily.feishu.cn/sheets/shtcnLML6348M7ujOaYd1EsUe9f?sheet=5d8cef
+//
+//	Sheet id can be found in url, for example in the url https://laily.feishu.cn/sheets/shtcnLML6348M7ujOaYd1EsUe9f?sheet=5d8cef
+//
 // sheet id is 5d8cef
 func (ss *SpreadSheets) DeleteSheet(sheetID string) *SpreadSheets {
 	if ss.Err != nil {
@@ -113,6 +116,8 @@ func (ss *SpreadSheets) ChangeOwner(newOwner *Member, removeOldOwner, notify boo
 
 func (ss *SpreadSheets) SetAccessPermission(per string) *SpreadSheets {
 	return ss.setPublic(&PublicSet{
+		Token:           ss.GetToken(),
+		Type:            "sheet",
 		LinkShareEntity: &per,
 	})
 }
@@ -128,7 +133,8 @@ func (ss *SpreadSheets) setPublic(args *PublicSet) *SpreadSheets {
 
 // AddSheet
 // Parameter
-//  index: first position is 0
+//
+//	index: first position is 0
 func (ss *SpreadSheets) AddSheet(title string, index int) *Sheet {
 	sheet := &Sheet{}
 	if ss.Err != nil {
