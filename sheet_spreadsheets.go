@@ -127,7 +127,9 @@ func (ss *SpreadSheets) setPublic(args *PublicSet) *SpreadSheets {
 		return ss
 	}
 	err := ss.baseClient.permission().PublicSet(args)
-	ss.Err = newErr(err.Error())
+	if err != nil {
+		ss.Err = newErr(err.Error())
+	}
 	return ss
 }
 
