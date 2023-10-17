@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 /*
-	About sheet.
+About sheet.
 */
 const (
 	defautWriteRowCount = 5000
@@ -162,13 +163,16 @@ func (s *Sheet) WriteRows(data [][]interface{}, batchCount ...int) *Sheet {
 
 // WriteRowsByStartCell
 // Parameter
-//  title: title of every columns.
-//  batchCount: max insert line coune once.
+//
+//	title: title of every columns.
+//	batchCount: max insert line coune once.
+//
 // Example
-//  s.WriteRowsByStartCell("A1",[]string{"name", "age"}, [][]interface{}{
-//  	{"Ace",15},
-//  	{"Bob",16},
-//  },10)
+//
+//	s.WriteRowsByStartCell("A1",[]string{"name", "age"}, [][]interface{}{
+//		{"Ace",15},
+//		{"Bob",16},
+//	},10)
 func (s *Sheet) WriteRowsByStartCell(startCell string, title []string, data [][]interface{}, batchCount ...int) *Sheet {
 	if s.Err != nil {
 		return s
@@ -229,6 +233,7 @@ func (s *Sheet) WriteRowsByStartCell(startCell string, title []string, data [][]
 			return s
 		}
 		startCell = cellnameAdd(startCell, 0, writeRowCount)
+		time.Sleep(50 * time.Millisecond) // 太快了容易出现超时
 	}
 	return s
 }
@@ -255,7 +260,8 @@ func (s *Sheet) Hidden(hidden bool) *Sheet {
 
 // FrozenRow
 // Parameter
-//  row: number of row that want to frezen. 0 represent unfrozen
+//
+//	row: number of row that want to frezen. 0 represent unfrozen
 func (s *Sheet) FrozenRow(row int) *Sheet {
 	return s.updateBase(map[string]interface{}{
 		"frozenRowCount": row,
@@ -264,7 +270,8 @@ func (s *Sheet) FrozenRow(row int) *Sheet {
 
 // FrozenColumn
 // Parameter
-//  column: number of column that want to frezen. 0 represent unfrozen
+//
+//	column: number of column that want to frezen. 0 represent unfrozen
 func (s *Sheet) FrozenColumn(column int) *Sheet {
 	return s.updateBase(map[string]interface{}{
 		"frozenColCount": column,
