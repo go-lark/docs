@@ -92,16 +92,16 @@ type SheetCellStyle struct {
 	Font struct {
 		Bold     bool   `json:"bold,omitempty"`
 		Italic   bool   `json:"italic,omitempty"`
-		FontSize string `json:"font_size,omitempty"`
+		FontSize string `json:"fontSize,omitempty"`
 		Clean    bool   `json:"clean,omitempty"`
 	} `json:"font,omitempty"`
-	TextDecoration int    `json:"text_decoration,omitempty"`
+	TextDecoration int    `json:"textDecoration,omitempty"`
 	Formatter      string `json:"formatter,omitempty"`
-	HAlign         int    `json:"h_align,omitempty"`
-	VAlign         int    `json:"v_align,omitempty"`
-	ForeColor      string `json:"fore_color,omitempty"`
-	BackColor      string `json:"back_color,omitempty"`
-	BorderType     string `json:"border_type,omitempty"`
-	BorderColor    string `json:"border_color,omitempty"`
+	HAlign         int    `json:"hAlign,omitempty"`
+	VAlign         int    `json:"vAlign,omitempty"`
+	ForeColor      string `json:"foreColor,omitempty"`
+	BackColor      string `json:"backColor,omitempty"`
+	BorderType     string `json:"borderType,omitempty"`
+	BorderColor    string `json:"borderColor,omitempty"`
 	Clean          bool   `json:"clean,omitempty"`
 }

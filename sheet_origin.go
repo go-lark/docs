@@ -8,6 +8,7 @@ package docs
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -311,16 +312,25 @@ func (so *SpreadSheetOrigin) WriteValuesByRangeMulti(rangeDatas []*WriteValuesBy
 	return b, resp, err
 }
 
-// Style todo return
-func (so *SpreadSheetOrigin) Style(style *SheetCellStyle) (interface{}, error) {
+// Style ...
+func (so *SpreadSheetOrigin) Style(_range Range, style *SheetCellStyle) (*SheetStyleResp, error) {
 	u := so.baseClient.urlJoin("/open-apis/sheets/v2/spreadsheets/" + so.token + "/style")
-	en, _ := json.Marshal(style)
+	en, _ := json.Marshal(map[string]interface{}{
+		"appendStyle": map[string]interface{}{
+			"range": _range,
+			"style": style,
+		},
+	})
 	req, _ := http.NewRequest(http.MethodPut,
 		u,
 		bytes.NewReader(en),
 	)
-	b, _ := so.baseClient.CommonReq(req, nil)
-	return b, nil
+	r := &SheetStyleResp{}
+	_, err := so.baseClient.CommonReq(req, r)
+	if err != nil {
+		return nil, fmt.Errorf("set style fail %w", err)
+	}
+	return r, nil
 }
 
 type SpreadSheetProperties struct {
@@ -473,5 +483,19 @@ type (
 		UpdatedColumns   int    `json:"updatedColumns"`
 		UpdatedRange     string `json:"updatedRange"`
 		UpdatedRows      int    `json:"updatedRows"`
+	}
+)
+
+type (
+	SheetStyleResp struct {
+		Updates SheetStyleRespUpdate `json:"updates"`
+	}
+	SheetStyleRespUpdate struct {
+		SpreadsheetToken string `json:"spreadsheetToken"`
+		UpdatedRange     string `json:"updatedRange"`
+		UpdatedRows      int    `json:"updatedRows"`
+		UpdatedColumns   int    `json:"updatedColumns"`
+		UpdatedCells     int    `json:"updatedCells"`
+		Revision         int    `json:"revision"`
 	}
 )

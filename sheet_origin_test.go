@@ -4,10 +4,29 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hilaily/kit/helper"
 	"github.com/hilaily/kit/stringx"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestSetStyle(t *testing.T) {
+	sheetID, err := getSheetID()
+	assert.NoError(t, err)
+	b, err := getOrigin().Style(NewRangeFull(sheetID, "A", "D"), &SheetCellStyle{
+		TextDecoration: 1,
+		Formatter:      "",
+		HAlign:         0,
+		VAlign:         0,
+		ForeColor:      "",
+		BackColor:      "#21d11f",
+		BorderType:     "",
+		BorderColor:    "",
+		Clean:          false,
+	})
+	assert.NoError(t, err)
+	helper.PJSON(b)
+}
 
 func TestSpreadSheetOrigin_MetaInfo(t *testing.T) {
 	b, res, err := getOrigin().MetaInfo()
