@@ -10,12 +10,12 @@ import (
 )
 
 func TestFile_Copy(t *testing.T) {
-	folder := getClientNew().RootFolder()
+	folder := getClient().RootFolder()
 	assert.NoError(t, folder.Err)
 	_, res, err := getFile().Copy(testDocToken, FileTypeDoc, folder.GetToken(), "a copy file", true)
 	assert.NoError(t, err)
 	t.Logf("%#+v", res)
-	err = getClientNew().permission().Add(res.Token, res.Type, PermEdit, false, NewMemberWithEmail(testUserEmail))
+	err = getClient().permission().Add(res.Token, res.Type, PermEdit, false, NewMemberWithEmail(testUserEmail))
 	assert.NoError(t, err)
 }
 
@@ -79,5 +79,5 @@ func TestFileUpdateResume(t *testing.T) {
 }
 
 func getFile() *File {
-	return getClientNew().file()
+	return getClient().file()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestFolderRoot(t *testing.T) {
-	res := getClientNew().RootFolder()
+	res := getClient().RootFolder()
 	t.Log(res.GetToken())
 }
 
@@ -16,7 +16,7 @@ func TestFolder(t *testing.T) {
 	res := getFolder().CreateSubFolder(title)
 	assert.NoError(t, res.Err)
 
-	subFolder := getClientNew().OpenFolder(res.GetToken())
+	subFolder := getClient().OpenFolder(res.GetToken())
 	meta, err := subFolder.GetMeta()
 	assert.NoError(t, err)
 	pMeta, err := getFolder().GetMeta()
@@ -45,5 +45,5 @@ func TestFolder_Children(t *testing.T) {
 }
 
 func getFolder() *Folder {
-	return getClientNew().OpenFolder(testFolderToken)
+	return getClient().OpenFolder(testFolderToken)
 }

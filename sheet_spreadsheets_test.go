@@ -35,9 +35,9 @@ func TestColCul(t *testing.T) {
 }
 
 func TestSpreadSheets_ChangeOwner(t *testing.T) {
-	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
+	ss := getClient().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).ChangeOwner(NewMemberWithEmail(testUserEmail), false, false)
 	assert.NoError(t, ss.Err)
-	t.Log(baseDomain + "/sheets/" + ss.token)
+	t.Log(tenantDomain + "/sheets/" + ss.token)
 	sheet := ss.SheetIndex(0).WriteRows(
 		[][]interface{}{
 			{"name", "age"},
@@ -50,14 +50,14 @@ func TestSpreadSheets_ChangeOwner(t *testing.T) {
 }
 
 func TestSpreadSheets_AddMember(t *testing.T) {
-	ss := getClientNew().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).
+	ss := getClient().RootFolder().CreateSpreadSheet("test create sheet"+time.Now().String()).
 		Share(PermEdit, false, NewMemberWithEmail(testUserEmail))
 	assert.NoError(t, ss.Err)
 	t.Log(ss.token)
 }
 
 func TestSpreadSheets_Meta(t *testing.T) {
-	sheet := getClientNew().OpenSpreadSheets(testSpreadSheetToken)
+	sheet := getClient().OpenSpreadSheets(testSpreadSheetToken)
 	meta, err := sheet.GetMeta()
 	assert.NoError(t, err)
 	assert.NotZero(t, len(meta.Sheets))
@@ -181,6 +181,15 @@ func TestSpreadSheets_UpdateTitle(t *testing.T) {
 	assert.Nil(t, ss.Err)
 }
 
+func TestAddSheet2(t *testing.T) {
+	t1 := "title1"
+	err := getSheetClient().AddSheet(t1, 0).Err
+	assert.NoError(t, err)
+	t2 := "title2"
+	err = getSheetClient().AddSheet(t2, 1).Err
+	assert.NoError(t, err)
+}
+
 func TestSpreadSheets_AddSheet(t *testing.T) {
 	title := "t" + stringx.GenRankStr(5)
 	sheet := getSheetClient().AddSheet(title, 0)
@@ -195,7 +204,7 @@ func TestSpreadSheets_AddSheet(t *testing.T) {
 }
 
 func getSheetClient() *SpreadSheets {
-	sheet := getClientNew().OpenSpreadSheets(testSpreadSheetToken)
+	sheet := getClient().OpenSpreadSheets(testSpreadSheetToken)
 	return sheet
 }
 

@@ -47,5 +47,5 @@ func TestAttachment_UpdateResume(t *testing.T) {
 }
 
 func getAttachment() *Attachment {
-	return getClientNew().attachment()
+	return getClient().attachment()
 }

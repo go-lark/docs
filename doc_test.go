@@ -26,7 +26,7 @@ func TestGetContent(t *testing.T) {
 func TestGetMeta(t *testing.T) {
 	res, err := docClient().GetMeta()
 	assert.NoError(t, err)
-	assert.Equal(t, baseDomain+"/docs/doccnHA8wfHJtNsVBhH6MkRoh7m", res.URL)
+	assert.Equal(t, tenantDomain+"/docs/doccnHA8wfHJtNsVBhH6MkRoh7m", res.URL)
 	assert.Equal(t, DocDeleteFlagNormal, res.DeleteFlag)
 }
 
@@ -56,7 +56,7 @@ func TestDoc_Create(t *testing.T) {
 	assert.NotEmpty(t, resp)
 	title := c.Title
 	title.Elements[0].TextRun.Text = "import test " + time.Now().String()
-	doc := getClientNew().OpenFolder(testFolderToken).CreateDoc(title, c.Body)
+	doc := getClient().OpenFolder(testFolderToken).CreateDoc(title, c.Body)
 	assert.Nil(t, doc.Err)
 	assert.NotEmpty(t, doc.GetToken())
 	//assert.NotEmpty(t, doc.GetURL())
@@ -90,7 +90,7 @@ func TestDoc_CreateDoc(t *testing.T) {
 	body := doctypes.NewBody(blocks...)
 	pp.Dump("title: ", title)
 	pp.Dump("body: ", body)
-	doc := getClientNew().OpenFolder(testFolderToken).CreateDoc(title, body)
+	doc := getClient().OpenFolder(testFolderToken).CreateDoc(title, body)
 	assert.Nil(t, doc.Err)
 
 	doc = doc.ChangeOwner(NewMemberWithEmail(testUserEmail), false, true)
@@ -105,7 +105,7 @@ func genParagraph() []doctypes.IBlocks {
 		doctypes.NewBlockParagraph(
 			doctypes.NewElementTextRun("以下都是 elements，放到同一行"),
 			doctypes.NewElementPerson("ou_3bbe8a09c20e89cce9bff989ed840675"),
-			doctypes.NewElementDocsLink(baseDomain+"/docs/doccnMao97bBZWcWfVG3A6NJBTr"),
+			doctypes.NewElementDocsLink(tenantDomain+"/docs/doccnMao97bBZWcWfVG3A6NJBTr"),
 			doctypes.NewElementReminder(false, 1600507800, false, doctypes.ReminderNotify1dBefore),
 			doctypes.NewElementEquation("E_n = - R_H \\left( {\\frac{1}{{n^2 }}} \\right) = \\frac{{ - 2.178 \\times 10^{ - 18} }}{{n^2 }}joule"),
 		),
@@ -171,5 +171,5 @@ func genOtherBlocks() []doctypes.IBlocks {
 }
 
 func docClient() *Doc {
-	return getClientNew().OpenDoc(testDocToken)
+	return getClient().OpenDoc(testDocToken)
 }

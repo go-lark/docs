@@ -3,12 +3,11 @@ package docs
 import "os"
 
 var (
-	baseDomain = ""
+	feishuDomain = ""
+	tenantDomain = ""
 
-	testAPPID      = ""
-	testAPPSecret  = ""
-	testAPPID2     = ""
-	testAPPSecret2 = ""
+	testAPPID     = ""
+	testAPPSecret = ""
 
 	testSpreadSheetToken = ""
 	testDocToken         = ""
@@ -22,14 +21,11 @@ var (
 
 // some variable for test
 func init() {
-	baseDomain = os.Getenv("DOCS_BASEDOMAIN")
-	// for test bot with website token
+	feishuDomain = os.Getenv("DOCS_FEISHU_DOMAIN")
+	tenantDomain = os.Getenv("DOCS_BASEDOMAIN")
+
 	testAPPID = os.Getenv("DOCS_APPID")
 	testAPPSecret = os.Getenv("DOCS_APPSECRET")
-
-	// for test bot with backend token
-	testAPPID2 = os.Getenv("DOCS_APPID2")
-	testAPPSecret2 = os.Getenv("DOCS_APPSECRET2")
 
 	// docs file token
 	testSpreadSheetToken = os.Getenv("DOCS_SPREADSHEET_TOKEN")

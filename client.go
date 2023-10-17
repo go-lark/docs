@@ -6,10 +6,9 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/go-lark/docs/log"
@@ -64,7 +63,7 @@ func (c *Client) CommonReq(_req *http.Request, dst interface{}) ([]byte, error) 
 			if err1 != nil {
 				log.Debugf("common req, get body, %s", err1.Error())
 			}
-			reqBody, err1 = ioutil.ReadAll(_body)
+			reqBody, err1 = io.ReadAll(_body)
 			if err1 != nil {
 				log.Debugf("common req,read body, %s", err1.Error())
 			}
@@ -127,6 +126,9 @@ func (c *Client) OpenSpreadSheets(spreadSheetToken string) *SpreadSheets {
 	ss := &SpreadSheets{}
 	ss.baseClient = c
 	ss.token = spreadSheetToken
+	if spreadSheetToken == "" {
+		ss.Err = fmt.Errorf("spread sheet token is empty")
+	}
 	return ss
 }
 
@@ -138,6 +140,9 @@ func (c *Client) OpenDoc(token string) *Doc {
 	d := &Doc{}
 	d.baseClient = c
 	d.token = token
+	if token == "" {
+		d.Err = fmt.Errorf("doc token is empty")
+	}
 	return d
 }
 
@@ -149,6 +154,9 @@ func (c *Client) OpenDocx(token string) *Docx {
 	d := &Docx{}
 	d.baseClient = c
 	d.token = token
+	if token == "" {
+		d.Err = fmt.Errorf("docx token is empty")
+	}
 	return d
 }
 
@@ -160,6 +168,9 @@ func (c *Client) OpenFolder(token string) *Folder {
 	f := &Folder{}
 	f.baseClient = c
 	f.token = token
+	if token == "" {
+		f.Err = fmt.Errorf("folder token is empty")
+	}
 	return f
 }
 
@@ -167,6 +178,9 @@ func (c *Client) OpenBitable(token string) *Bitable {
 	b := &Bitable{}
 	b.token = token
 	b.baseClient = c
+	if token == "" {
+		b.Err = fmt.Errorf("bitable token is empty")
+	}
 	return b
 }
 
@@ -213,7 +227,7 @@ type ClientOption func(c *Client)
 // WithDomain set domain for api, default is https://open.feishu.cn
 func WithDomain(domain string) ClientOption {
 	return func(c *Client) {
-		c.domain = strings.TrimSuffix(domain, "/")
+		c.domain = stringx.AddURLSchema(domain, "https://")
 	}
 }
 

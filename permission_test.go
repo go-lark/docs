@@ -11,7 +11,7 @@ import (
 func TestPermission_PublicSet(t *testing.T) {
 	folderToken, err := getRootFolder()
 	assert.NoError(t, err)
-	r, err := getClientNew().file().Create(folderToken, "test create file", FileTypeDoc)
+	r, err := getClient().file().Create(folderToken, "test create file", FileTypeDoc)
 	t.Log(r)
 	assert.NoError(t, err)
 	err = getPermission().PublicSet(&PublicSet{
@@ -25,7 +25,7 @@ func TestPermission_PublicSet(t *testing.T) {
 func TestPermission_Add(t *testing.T) {
 	folderToken, err := getRootFolder()
 	assert.NoError(t, err)
-	r, err := getClientNew().file().Create(folderToken, "test create file", FileTypeDoc)
+	r, err := getClient().file().Create(folderToken, "test create file", FileTypeDoc)
 	assert.NoError(t, err)
 	err = getPermission().Add(r.Token, FileTypeDoc, PermEdit, false, NewMemberWithEmail(testUserEmail))
 	assert.NoError(t, err)
@@ -34,7 +34,7 @@ func TestPermission_Add(t *testing.T) {
 func TestPermission_TransferOwner(t *testing.T) {
 	folderToken, err := getRootFolder()
 	assert.NoError(t, err)
-	r, err := getClientNew().file().Create(folderToken, "test create file", FileTypeDoc)
+	r, err := getClient().file().Create(folderToken, "test create file", FileTypeDoc)
 	assert.NoError(t, err)
 	_, res, err := getPermission().TransferOwner(r.Token, FileTypeDoc, NewMemberWithEmail(testUserEmail), false, true)
 	assert.NoError(t, err)
@@ -44,12 +44,12 @@ func TestPermission_TransferOwner(t *testing.T) {
 
 func getPermission() *permission {
 	return &permission{
-		baseClient: getClientNew(),
+		baseClient: getClient(),
 	}
 }
 
 func getRootFolder() (string, error) {
-	folder := getClientNew().RootFolder()
+	folder := getClient().RootFolder()
 	if folder.Err != nil {
 		return "", folder.Err
 	}

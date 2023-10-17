@@ -138,7 +138,7 @@ func TestSpreadSheetOrigin_ReadValuesByRangeMulti(t *testing.T) {
 
 func getOrigin() *SpreadSheetOrigin {
 	return &SpreadSheetOrigin{
-		baseClient: getClientNew(),
+		baseClient: getClient(),
 		token:      testSpreadSheetToken,
 	}
 }

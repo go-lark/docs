@@ -20,5 +20,5 @@ func TestAddRecord(t *testing.T) {
 }
 
 func bitableClient() *Bitable {
-	return getClientNew().OpenBitable("FYsxbceSuauxgzsmFVpc1fFEnh1")
+	return getClient().OpenBitable("FYsxbceSuauxgzsmFVpc1fFEnh1")
 }
