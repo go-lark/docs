@@ -31,7 +31,7 @@ func init() {
 	testSpreadSheetToken = os.Getenv("DOCS_SPREADSHEET_TOKEN")
 	testDocToken = os.Getenv("DOCS_DOC_TOKEN")
 	testFolderToken = os.Getenv("DOCS_FOLDER_TOKEN")
-	testBitableToken = os.Getenv("DOCS_BITABLE_TOKEN")
+	testBitableToken = os.Getenv("DOCS_SPREADSHEET_TOKEN")
 	testDocxToken = os.Getenv("DOCS_DOCX_TOKEN")
 
 	testBigFile = os.Getenv("DOCS_BIG_FILE")

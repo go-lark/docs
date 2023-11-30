@@ -233,6 +233,10 @@ func (ss *SpreadSheets) CopySheet(sourceSheetID string, title string) (sheet *Sh
 	return newSheet(id, ss)
 }
 
+func (ss *SpreadSheets) Statistics() (*FileStatistics, error) {
+	return newFile(ss.baseClient).statistics(ss.token, FileTypeSheet)
+}
+
 type SheetContent struct {
 	ValueRange struct {
 		Values [][]interface{} `json:"values"`

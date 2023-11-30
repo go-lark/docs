@@ -17,5 +17,9 @@ type Docx struct {
 }
 
 func (d *Docx) GetMeta() (*MetaRespMetas, error) {
-	return d.baseClient.GetMeta(d.token, "docx", "")
+	return d.baseClient.GetMeta(d.token, FileTypeWiki, "")
+}
+
+func (d *Docx) Statistics() (*FileStatistics, error) {
+	return newFile(d.baseClient).statistics(d.token, FileTypeDocx)
 }

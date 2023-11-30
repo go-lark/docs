@@ -259,8 +259,36 @@ func (f *File) resumeFinish(urlpath string, uploadID string, blockSum int) (file
 	return
 }
 
+func (f *File) statistics(fileToken string, fileType FileType) (stat *FileStatistics, err error) {
+	u := f.baseClient.urlJoin(fmt.Sprintf("open-apis/drive/v1/files/%s/statistics?file_type=%s", fileToken, fileType))
+	req, err := http.NewRequest(http.MethodGet, u, nil)
+	if err != nil {
+		err = fmt.Errorf("gen request fail, token:%s, file type:%s, %w", fileToken, fileType, err)
+		return
+	}
+	_, err = f.baseClient.CommonReq(req, &stat)
+	if err != nil {
+		err = fmt.Errorf("get statistics fail, token:%s, file type:%s, %w", fileToken, fileType, err)
+		return
+	}
+	return
+}
+
 type resumePreparesResp struct {
 	UploadID  string `json:"upload_id"`
 	BlockSize int64  `json:"block_size"`
 	BlockNum  int    `json:"block_num"`
+}
+
+type FileStatistics struct {
+	FileToken  string `json:"file_token"`
+	FileType   string `json:"file_type"`
+	Statistics Stats  `json:"statistics"`
+}
+
+type Stats struct {
+	UV        int64 `json:"uv"`
+	PV        int64 `json:"pv"`
+	LikeCount int64 `json:"like_count"`
+	Timestamp int64 `json:"timestamp"`
 }

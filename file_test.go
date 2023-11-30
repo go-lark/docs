@@ -9,6 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFile_Statistics(t *testing.T) {
+	c := getClient()
+	f := newFile(c)
+	res, err := f.Statistics(testDocToken, FileTypeDoc)
+	assert.NoError(t, err)
+	t.Logf("%#+v", res)
+	assert.NotZero(t, res.Statistics.UV)
+}
+
 func TestFile_Copy(t *testing.T) {
 	folder := getClient().RootFolder()
 	assert.NoError(t, folder.Err)

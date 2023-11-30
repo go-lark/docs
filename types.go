@@ -5,7 +5,9 @@ type FileType = string
 
 var (
 	FileTypeDoc      FileType = "doc"
+	FileTypeDocx     FileType = "docx"
 	FileTypeSheet    FileType = "sheet"
+	FileTypeWiki     FileType = "wiki"
 	FileTypeSlide    FileType = "slide"
 	FileTypeBitable  FileType = "bitable"
 	FileTypeMindNote FileType = "mindnote"

@@ -11,12 +11,12 @@ import (
 func TestPermission_PublicSet(t *testing.T) {
 	folderToken, err := getRootFolder()
 	assert.NoError(t, err)
-	r, err := getClient().file().Create(folderToken, "test create file", FileTypeDoc)
+	r, err := getClient().file().Create(folderToken, "test create file", FileTypeSheet)
 	t.Log(r)
 	assert.NoError(t, err)
 	err = getPermission().PublicSet(&PublicSet{
 		Token:           r.Token,
-		Type:            FileTypeDoc,
+		Type:            FileTypeSheet,
 		LinkShareEntity: stringx.Pointer("tenant_readable"),
 	})
 	assert.NoError(t, err)

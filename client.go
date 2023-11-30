@@ -184,6 +184,16 @@ func (c *Client) OpenBitable(token string) *Bitable {
 	return b
 }
 
+func (c *Client) OpenWiki(token string) *Wiki {
+	d := &Wiki{}
+	d.baseClient = c
+	d.token = token
+	if token == "" {
+		d.Err = fmt.Errorf("wiki token is empty")
+	}
+	return d
+}
+
 // RootFolder get root folder of the bot/user
 func (c *Client) RootFolder() *Folder {
 	f := &Folder{}

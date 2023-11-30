@@ -78,6 +78,10 @@ func (d *Doc) SetAccessPermission(per string) *Doc {
 	})
 }
 
+func (d *Doc) Statistics() (*FileStatistics, error) {
+	return newFile(d.baseClient).statistics(d.token, FileTypeDoc)
+}
+
 func (d *Doc) setPublic(args *PublicSet) *Doc {
 	if d.Err != nil {
 		return d
