@@ -44,9 +44,9 @@ type MetaRespMetas struct {
 	DocType          string `json:"doc_type"`
 	Title            string `json:"title"`
 	OwnerID          string `json:"owner_id"`
-	CreateTime       string `json:"create_time"`
+	CreateTime       int64  `json:"create_time,string"`
 	LatestModifyUser string `json:"latest_modify_user"`
-	LatestModifyTime string `json:"latest_modify_time"`
+	LatestModifyTime int64  `json:"latest_modify_time,string"`
 	URL              string `json:"url"`
 	SecLabelName     string `json:"sec_label_name"`
 }

@@ -97,7 +97,7 @@ type DocMeta struct {
 	CreateUID      string        `json:"create_uid"`
 	CreateUserName string        `json:"create_user_name"`
 	DeleteFlag     DocDeleteFlag `json:"delete_flag"`
-	EditTime       int           `json:"edit_time"`
+	EditTime       int64         `json:"edit_time,string"`
 	EditUserName   string        `json:"edit_user_name"`
 	IsExternal     bool          `json:"is_external"`
 	IsPined        bool          `json:"is_pined"`

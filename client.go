@@ -102,7 +102,7 @@ func (c *Client) DoRequest(_req *http.Request, dst interface{}) ([]byte, error) 
 	body := &respBody{}
 	_, err = httpx.HandleResp(res, body)
 	if err != nil {
-		return nil, &Err{Meta: *m, Code: body.Code, Msg: fmt.Sprintf("common req, hanle resp, url: %s, %v", reqURL, err)}
+		return nil, &Err{Meta: *m, Code: body.Code, Msg: fmt.Sprintf("common req, handle resp, url: %s, %v", reqURL, err)}
 	}
 	if body.Code != 0 {
 		return nil, &Err{Meta: *m, Code: body.Code, Msg: body.Msg}
